@@ -9,7 +9,13 @@ from decision import generate_plan
 from action import execute_tool
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
-from mcp.client.tcp import tcp_client  # Import TCP client for connection to existing server
+# Try to import tcp_client, but don't fail if it's not available
+try:
+    from mcp.client.tcp import tcp_client
+    HAS_TCP_CLIENT = True
+except ImportError:
+    HAS_TCP_CLIENT = False
+    print("[agent] Warning: mcp.client.tcp module not available. Will only use stdio client.")
 
 import shutil
 import sys
@@ -36,8 +42,9 @@ async def main(user_input: str):
         print(f"[agent] Current working directory: {os.getcwd()}")
         
         # Check if an MCP server is already running on the standard port (8080)
+        # and if we have the TCP client available
         mcp_port = 8080
-        if is_port_in_use(mcp_port):
+        if HAS_TCP_CLIENT and is_port_in_use(mcp_port):
             # Try to connect to existing MCP server
             print(f"[agent] Detected existing MCP server on port {mcp_port}, trying to connect...")
             try:
@@ -54,6 +61,10 @@ async def main(user_input: str):
             except Exception as e:
                 print(f"[agent] Failed to connect to existing MCP server: {str(e)}")
                 print("[agent] Will start a new MCP server instance")
+        else:
+            if is_port_in_use(mcp_port):
+                print(f"[agent] Warning: MCP server detected on port {mcp_port}, but TCP client is not available.")
+                print("[agent] Will start a new MCP server instance via stdio")
         
         # If we get here, we need to start our own MCP server
         # Pass environment to the subprocess

@@ -3,14 +3,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import asyncio
 from typing import Dict, Any, List, Optional
-import agent
+import subprocess
+import sys
+import os
+import datetime
 import uuid
 import json
-import subprocess
-import os
-import signal
-import atexit
-import sys
+
+# Import directly from agent's dependencies instead of importing agent module
+from perception import extract_perception
+from memory import MemoryManager, MemoryItem
+from decision import generate_plan
+from action import execute_tool
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
 app = FastAPI(title="Agent API")
 
@@ -26,6 +32,44 @@ app.add_middleware(
 # Store sessions and their results
 sessions = {}
 
+# MCP server process management
+mcp_server_process = None
+
+def log(stage: str, msg: str):
+    """Logging function similar to agent.py"""
+    now = datetime.datetime.now().strftime("%H:%M:%S")
+    print(f"[{now}] [{stage}] {msg}")
+
+def start_mcp_server():
+    """Start the MCP server as a subprocess"""
+    global mcp_server_process
+    if mcp_server_process is None or mcp_server_process.poll() is not None:
+        print("Starting MCP server...")
+        mcp_server_process = subprocess.Popen(
+            [sys.executable, "mcp-server.py"],
+            cwd="./",
+            stdout=None,
+            stderr=None,
+        )
+        print(f"MCP server started with PID {mcp_server_process.pid}")
+        return True
+    return False
+
+def stop_mcp_server():
+    """Stop the MCP server subprocess"""
+    global mcp_server_process
+    if mcp_server_process is not None:
+        print("Stopping MCP server...")
+        try:
+            mcp_server_process.terminate()
+            mcp_server_process.wait(timeout=5)
+            print("MCP server stopped")
+        except Exception as e:
+            print(f"Error stopping MCP server: {e}")
+            if mcp_server_process.poll() is None:
+                mcp_server_process.kill()
+        mcp_server_process = None
+
 class QueryRequest(BaseModel):
     query: str
 
@@ -37,82 +81,211 @@ class SessionStatusResponse(BaseModel):
     status: str
     results: Optional[Dict[str, Any]] = None
     final_answer: Optional[str] = None
+
+async def process_agent_directly(session_id: str, query: str):
+    """Process an agent query directly without using agent.py module"""
+    try:
+        # Make sure we have a session record
+        if session_id not in sessions:
+            sessions[session_id] = {
+                "status": "initializing",
+                "results": {},
+                "final_answer": None,
+            }
+        
+        # Define constants
+        max_steps = 30
+        
+        # Ensure MCP server is running before we try to connect to it
+        start_mcp_server()
+        
+        # Connect to MCP server
+        print("[API] Starting agent processing...")
+        print(f"[API] Current working directory: {os.getcwd()}")
+        
+        # Create new server parameters for this session
+        server_params = StdioServerParameters(
+            command="python",
+            args=["mcp-server.py"],
+            cwd="./.",
+            env=os.environ
+        )
+        
+        # Connect to MCP server
+        try:
+            async with stdio_client(server_params) as (read, write):
+                print("[API] Connection established, creating session...")
+                
+                async with ClientSession(read, write) as session:
+                    print("[API] Session created, initializing...")
+                    
+                    # Initialize the session
+                    await session.initialize()
+                    print("[API] MCP session initialized")
+                    
+                    # Get available tools
+                    tools_result = await session.list_tools()
+                    tools = tools_result.tools
+                    tool_descriptions = "\n".join(
+                        f"- {tool.name}: {getattr(tool, 'description', 'No description')}" 
+                        for tool in tools
+                    )
+                    
+                    log("agent", f"{len(tools)} tools loaded")
+                    
+                    # Initialize memory and tracking variables
+                    memory = MemoryManager()
+                    memory_session_id = f"session-{int(datetime.datetime.now().timestamp())}"
+                    user_input = query  # Store original intent
+                    original_query = query
+                    step = 0
+                    results_so_far = {}  # Store important results
+                    
+                    # Update session status to running
+                    sessions[session_id]["status"] = "running"
+                    
+                    # Start the agent loop
+                    while step < max_steps:
+                        log("loop", f"Step {step + 1} started")
+                        
+                        # Add accumulated results to the user input for better context
+                        context_input = user_input
+                        if results_so_far:
+                            context_input += "\n\nPrevious results: " + ", ".join(
+                                [f"{k}: {v}" for k, v in results_so_far.items()]
+                            )
+                        
+                        # Get perception
+                        perception = extract_perception(context_input)
+                        log("perception", f"Intent: {perception.intent}, Tool hint: {perception.tool_hint}")
+                        
+                        # Get memory
+                        retrieved = memory.retrieve(
+                            query=context_input, 
+                            top_k=5, 
+                            session_filter=memory_session_id
+                        )
+                        log("memory", f"Retrieved {len(retrieved)} relevant memories")
+                        
+                        # Generate plan
+                        plan = generate_plan(
+                            perception, 
+                            retrieved, 
+                            tool_descriptions=tool_descriptions
+                        )
+                        log("plan", f"Plan generated: {plan}")
+                        
+                        # Check for final answer
+                        if plan.startswith("FINAL_ANSWER:"):
+                            final_answer = plan.replace("FINAL_ANSWER:", "").strip()
+                            log("agent", f"✅ FINAL RESULT: {final_answer}")
+                            sessions[session_id]["status"] = "completed"
+                            sessions[session_id]["final_answer"] = final_answer
+                            break
+                        
+                        # Execute tool
+                        try:
+                            result = await execute_tool(session, tools, plan)
+                            log("tool", f"{result.tool_name} returned: {result.result}")
+                            
+                            # Store in session results for frontend
+                            sessions[session_id]["results"][f"tool_{step}"] = {
+                                "tool": result.tool_name,
+                                "result": str(result.result)
+                            }
+                            
+                            # Store important results based on tool type
+                            if result.tool_name in ['add', 'subtract', 'multiply', 'divide']:
+                                results_so_far[f"math_{step}"] = result.result
+                            elif result.tool_name == 'search_documents':
+                                if isinstance(result.result, list) and result.result:
+                                    query_key = str(result.arguments).replace(" ", "_")[:30]
+                                    results_so_far[f"search_{query_key}"] = f"Retrieved information about: {result.arguments}"
+                                    
+                                    search_summary = f"Found information about {result.arguments}"
+                                    memory.add(MemoryItem(
+                                        text=f"SEARCH SUMMARY: {search_summary}",
+                                        type="fact",
+                                        tool_name="search_summary",
+                                        user_query=user_input,
+                                        tags=["search_summary"],
+                                        session_id=memory_session_id
+                                    ))
+                            elif result.tool_name.startswith('search_') or result.tool_name.startswith('get_'):
+                                param_key = str(result.arguments).replace(" ", "_")[:30]
+                                results_so_far[f"{result.tool_name}_{param_key}"] = f"Retrieved data about {result.arguments}"
+                                
+                                memory.add(MemoryItem(
+                                    text=f"RETRIEVAL SUMMARY: Used {result.tool_name} to get information about {result.arguments}",
+                                    type="fact",
+                                    tool_name=result.tool_name,
+                                    user_query=user_input,
+                                    tags=["retrieval_summary"],
+                                    session_id=memory_session_id
+                                ))
+                            
+                            # Add tool result to memory
+                            memory.add(MemoryItem(
+                                text=f"Tool call: {result.tool_name} with {result.arguments}, got: {result.result}",
+                                type="tool_output",
+                                tool_name=result.tool_name,
+                                user_query=user_input,
+                                tags=[result.tool_name],
+                                session_id=memory_session_id
+                            ))
+                            
+                            # Set up for the next iteration
+                            user_input = f"Original task: {original_query}\nPrevious steps: {results_so_far}\nWhat should I do next?"
+                            
+                        except Exception as e:
+                            error_msg = f"Tool execution failed: {e}"
+                            log("error", error_msg)
+                            sessions[session_id]["status"] = "error"
+                            sessions[session_id]["error"] = error_msg
+                            break
+                        
+                        step += 1
+                    
+                    # If we reached the maximum number of steps without a final answer
+                    if step >= max_steps and sessions[session_id]["status"] == "running":
+                        sessions[session_id]["status"] = "completed"
+                        sessions[session_id]["final_answer"] = "Reached maximum number of steps without finding a final answer."
+        
+        except Exception as e:
+            error_msg = f"Session processing error: {e}"
+            print(error_msg)
+            import traceback
+            traceback.print_exc()
+            sessions[session_id]["status"] = "error"
+            sessions[session_id]["error"] = error_msg
     
+    except Exception as e:
+        error_msg = f"Overall agent processing error: {e}"
+        print(error_msg)
+        import traceback
+        traceback.print_exc()
+        sessions[session_id]["status"] = "error"
+        sessions[session_id]["error"] = error_msg
+
 # Helper function to run agent in background
 async def run_agent_task(session_id: str, query: str):
+    """Run the agent processing in a background task"""
     try:
-        # Create a queue to get results from the agent
-        result_queue = asyncio.Queue()
+        # Initialize session
         sessions[session_id] = {
-            "status": "running",
+            "status": "initializing",
             "results": {},
-            "final_answer": None,
-            "queue": result_queue
+            "final_answer": None
         }
         
-        # Monkey patch the log function to capture results
-        original_log = agent.log
-        
-        def patched_log(stage: str, msg: str):
-            original_log(stage, msg)
-            if stage == "agent" and msg.startswith("✅ FINAL RESULT:"):
-                final_answer = msg.replace("✅ FINAL RESULT:", "").strip()
-                asyncio.create_task(result_queue.put({"type": "final", "data": final_answer}))
-            elif stage == "tool":
-                # Extract tool results - this is simplified and may need adjustment
-                asyncio.create_task(result_queue.put({"type": "tool_result", "data": msg}))
-                
-        # Replace the log function temporarily
-        agent.log = patched_log
-        
-        # Run the agent in a separate task
-        agent_task = asyncio.create_task(agent.main(query))
-        
-        # Process results as they come in
-        while True:
-            try:
-                result = await asyncio.wait_for(result_queue.get(), timeout=1.0)
-                if result["type"] == "final":
-                    sessions[session_id]["status"] = "completed"
-                    sessions[session_id]["final_answer"] = result["data"]
-                    break
-                elif result["type"] == "tool_result":
-                    # Parse and store tool results
-                    tool_data = result["data"]
-                    if "returned:" in tool_data:
-                        parts = tool_data.split("returned:")
-                        if len(parts) >= 2:
-                            tool_name = parts[0].strip()
-                            tool_result = parts[1].strip()
-                            sessions[session_id]["results"][f"tool_{len(sessions[session_id]['results'])}"] = {
-                                "tool": tool_name,
-                                "result": tool_result
-                            }
-            except asyncio.TimeoutError:
-                # Check if the agent task is done
-                if agent_task.done():
-                    if not sessions[session_id]["final_answer"]:
-                        sessions[session_id]["status"] = "completed"
-                        sessions[session_id]["final_answer"] = "Agent completed without final answer"
-                    break
-            except Exception as e:
-                sessions[session_id]["status"] = "error"
-                sessions[session_id]["error"] = str(e)
-                break
-                
-        # Wait for agent to complete
-        try:
-            await agent_task
-        except Exception as e:
-            sessions[session_id]["status"] = "error"
-            sessions[session_id]["error"] = str(e)
-            
-        # Restore original log function
-        agent.log = original_log
+        # Process the agent directly
+        await process_agent_directly(session_id, query)
         
     except Exception as e:
+        error_msg = f"Error running agent task: {e}"
+        print(error_msg)
         sessions[session_id]["status"] = "error"
-        sessions[session_id]["error"] = str(e)
+        sessions[session_id]["error"] = error_msg
 
 @app.post("/query", response_model=QueryResponse)
 async def create_query(request: QueryRequest, background_tasks: BackgroundTasks):
@@ -139,6 +312,25 @@ async def get_session_status(session_id: str):
 async def health_check():
     return {"status": "healthy"}
 
+# Handle startup
+@app.on_event("startup")
+async def startup_event():
+    # Start MCP server when API starts
+    start_mcp_server()
+
+# Handle shutdown
+@app.on_event("shutdown")
+async def shutdown_event():
+    # Stop MCP server when API stops
+    stop_mcp_server()
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True) 
+    try:
+        # Start MCP server before starting API
+        start_mcp_server()
+        # Run FastAPI server without reload to avoid duplicate MCP processes
+        uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=False)
+    finally:
+        # Ensure MCP server is stopped when API exits
+        stop_mcp_server() 

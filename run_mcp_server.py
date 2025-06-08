@@ -5,37 +5,49 @@ import os
 import time
 import socket
 
-def is_port_in_use(port):
-    """Check if a port is in use by attempting to bind to it"""
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', port)) == 0
+def is_mcp_server_running():
+    """Check if a MCP server process is already running"""
+    try:
+        # Simple check for running python processes with mcp-server.py
+        if sys.platform == 'win32':
+            # Windows
+            output = subprocess.check_output(
+                "tasklist /FI \"IMAGENAME eq python.exe\" /FO CSV", 
+                shell=True, 
+                text=True
+            )
+            return "mcp-server.py" in output
+        else:
+            # Unix-like
+            output = subprocess.check_output(
+                "ps aux | grep 'mcp-server.py' | grep -v grep", 
+                shell=True, 
+                text=True
+            )
+            return len(output.strip()) > 0
+    except subprocess.CalledProcessError:
+        # Command failed or no matching processes
+        return False
 
 def main():
-    mcp_port = 8080
-    
     # Check if MCP server is already running
-    if is_port_in_use(mcp_port):
-        print(f"MCP server is already running on port {mcp_port}.")
+    if is_mcp_server_running():
+        print("MCP server appears to be already running.")
         print("Please stop the existing server before starting a new one.")
         return 1
     
-    print(f"Starting MCP server in standalone mode on port {mcp_port}...")
+    print("Starting MCP server in standalone mode...")
     try:
-        # Start MCP server process with port configuration
-        env = os.environ.copy()
-        env["MCP_PORT"] = str(mcp_port)  # Set port via environment variable
-        
+        # Start MCP server process
         mcp_process = subprocess.Popen(
             [sys.executable, "mcp-server.py"],
             cwd="./",
             # Show output in console
             stdout=None,
             stderr=None,
-            env=env
         )
         
         print(f"MCP server running with PID {mcp_process.pid}")
-        print(f"Server is listening on port {mcp_port}")
         print("Press Ctrl+C to stop the server")
         
         # Keep the script running to maintain the server
