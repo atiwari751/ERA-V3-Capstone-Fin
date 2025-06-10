@@ -185,13 +185,28 @@ async def process_agent_directly(session_id: str, query: str):
                         
                         # Execute tool
                         try:
+                            # First, create a placeholder for the tool with "Running" status
+                            tool_name = plan.strip().split('(')[0] if '(' in plan else plan.strip()
+                            
+                            # Add to session results with Running status
+                            sessions[session_id]["results"][f"tool_{step}"] = {
+                                "tool": tool_name,
+                                "result": "Executing...",
+                                "status": "Running"
+                            }
+                            
+                            # Small delay to allow frontend to pick up the "Running" status
+                            await asyncio.sleep(0.5)
+                            
+                            # Actually execute the tool
                             result = await execute_tool(session, tools, plan)
                             log("tool", f"{result.tool_name} returned: {result.result}")
                             
-                            # Store in session results for frontend
+                            # Update the result in session with completed status
                             sessions[session_id]["results"][f"tool_{step}"] = {
                                 "tool": result.tool_name,
-                                "result": str(result.result)
+                                "result": str(result.result),
+                                "status": "Finished"
                             }
                             
                             # Store important results based on tool type
@@ -240,6 +255,14 @@ async def process_agent_directly(session_id: str, query: str):
                         except Exception as e:
                             error_msg = f"Tool execution failed: {e}"
                             log("error", error_msg)
+                            
+                            # Update the result with error status
+                            sessions[session_id]["results"][f"tool_{step}"] = {
+                                "tool": tool_name,
+                                "result": error_msg,
+                                "status": "Error"
+                            }
+                            
                             sessions[session_id]["status"] = "error"
                             sessions[session_id]["error"] = error_msg
                             break
