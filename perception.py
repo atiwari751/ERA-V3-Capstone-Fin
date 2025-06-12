@@ -53,6 +53,9 @@ Output only the dictionary on a single line. Do NOT wrap it in ```json or other 
         # Strip Markdown backticks if present
         clean = re.sub(r"^```json|```$", "", raw.strip(), flags=re.MULTILINE).strip()
 
+        # Replace JSON null with Python None
+        clean = clean.replace(": null", ": None")
+
         try:
             parsed = eval(clean)
         except Exception as e:
@@ -62,7 +65,6 @@ Output only the dictionary on a single line. Do NOT wrap it in ```json or other 
         # Fix common issues
         if isinstance(parsed.get("entities"), dict):
             parsed["entities"] = list(parsed["entities"].values())
-
 
         return PerceptionResult(user_input=user_input, **parsed)
 
