@@ -353,7 +353,7 @@ if __name__ == "__main__":
         # Start MCP server before starting API
         start_mcp_server()
         # Run FastAPI server without reload to avoid duplicate MCP processes
-        uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=False)
+        uvicorn.run("api:app", host="0.0.0.0", port=8001, reload=False)
     finally:
         # Ensure MCP server is stopped when API exits
         stop_mcp_server() 
