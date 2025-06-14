@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import CuboidModel from './CuboidModel';
+import SchemeSidePanel from './SchemeSidePanel';
+import './SchemeGrid.css';
 
 // Component for a single scheme with frame and title
-const SchemeFrame = ({ scheme, index }) => {
+const SchemeFrame = ({ scheme, index, onSchemeClick }) => {
   return (
-    <div className="scheme-frame">
+    <div 
+      className="scheme-frame" 
+      onClick={() => onSchemeClick(scheme, index)}
+    >
       <div className="scheme-title">Scheme {index + 1}</div>
       <div className="scheme-canvas-container">
         <Canvas camera={{ position: [0, 2, 5], fov: 50 }}>
@@ -42,15 +47,37 @@ const SchemeFrame = ({ scheme, index }) => {
 
 // Main component for the grid of schemes
 const SchemeGrid = ({ schemes }) => {
+  const [selectedScheme, setSelectedScheme] = useState(null);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+
+  const handleSchemeClick = (scheme, index) => {
+    // Add the index + 1 as the ID for display purposes
+    setSelectedScheme({ ...scheme, id: index + 1 });
+    setIsSidePanelOpen(true);
+  };
+
+  const handleCloseSidePanel = () => {
+    setIsSidePanelOpen(false);
+  };
+
   return (
-    <div className="scheme-grid">
-      {schemes.map((scheme, index) => (
-        <SchemeFrame 
-          key={index} 
-          scheme={scheme} 
-          index={index} 
-        />
-      ))}
+    <div className="scheme-grid-container">
+      <div className="scheme-grid">
+        {schemes.map((scheme, index) => (
+          <SchemeFrame 
+            key={index} 
+            scheme={scheme} 
+            index={index}
+            onSchemeClick={handleSchemeClick}
+          />
+        ))}
+      </div>
+      
+      <SchemeSidePanel 
+        scheme={selectedScheme}
+        isOpen={isSidePanelOpen}
+        onClose={handleCloseSidePanel}
+      />
     </div>
   );
 };

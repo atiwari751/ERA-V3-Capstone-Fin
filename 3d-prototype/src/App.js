@@ -90,7 +90,7 @@ function App() {
         <div className="visualization-area">
           <div className="vis-header">
             <h3>3D Visualization</h3>
-            <p>Click and drag to rotate, scroll to zoom, click on cuboids to animate</p>
+            <p>Click on a scheme to view its details in a side panel. Click and drag to rotate, scroll to zoom.</p>
           </div>
           
           {/* Add scrollable container */}
