@@ -4,6 +4,9 @@ import { OrbitControls, Environment } from '@react-three/drei';
 import axios from 'axios';
 import './App.css';
 import CuboidModel from './components/CuboidModel';
+import AgentSession from './components/AgentSession';
+import mockAgentService from './services/mockAgentService';
+import './components/AgentSession.css';
 
 // API URL for the backend
 const API_URL = "http://localhost:8002";
@@ -13,6 +16,13 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userPrompt, setUserPrompt] = useState('');
+  
+  // Agent session state
+  const [sessionId, setSessionId] = useState(null);
+  const [sessionStatus, setSessionStatus] = useState('idle');
+  const [sessionResults, setSessionResults] = useState({});
+  const [finalAnswer, setFinalAnswer] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Fetch cuboid data from the backend
   useEffect(() => {
@@ -31,12 +41,38 @@ function App() {
     fetchCuboids();
   }, []);
 
-  const handlePromptSubmit = (e) => {
+  // Handle user prompt submission
+  const handlePromptSubmit = async (e) => {
     e.preventDefault();
-    console.log("User prompt submitted:", userPrompt);
-    // Here you would normally send the prompt to the agent
-    // For now, we'll just log it and clear the input
+    
+    if (!userPrompt.trim() || isProcessing) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      // Process the query with the mock agent service
+      await mockAgentService.processQuery(userPrompt, (update) => {
+        setSessionId(update.sessionId);
+        setSessionStatus(update.status);
+        setSessionResults(update.results);
+        setFinalAnswer(update.finalAnswer);
+      });
+    } catch (error) {
+      console.error("Error processing query:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+    
+    // Clear the input field
     setUserPrompt('');
+  };
+  
+  // Handle starting a new query
+  const handleNewQuery = () => {
+    setSessionId(null);
+    setSessionStatus('idle');
+    setSessionResults({});
+    setFinalAnswer(null);
   };
 
   if (loading) {
@@ -97,10 +133,20 @@ function App() {
           </div>
           
           <div className="agent-content">
-            {/* This area will contain agent responses and step tracking */}
-            <div className="placeholder-content">
-              {/* Placeholder for agent responses */}
-            </div>
+            {sessionId ? (
+              <AgentSession
+                sessionId={sessionId}
+                status={sessionStatus}
+                results={sessionResults}
+                finalAnswer={finalAnswer}
+                onNewQuery={handleNewQuery}
+              />
+            ) : (
+              <div className="agent-placeholder">
+                <p>Enter a prompt below to start a new session.</p>
+                <p>Try queries like "show me a house" or "design an office building".</p>
+              </div>
+            )}
           </div>
           
           {/* User Input Area */}
@@ -111,8 +157,11 @@ function App() {
                 value={userPrompt}
                 onChange={(e) => setUserPrompt(e.target.value)}
                 placeholder="Enter your prompt here..."
+                disabled={isProcessing}
               />
-              <button type="submit">Send</button>
+              <button type="submit" disabled={isProcessing || !userPrompt.trim()}>
+                {isProcessing ? "Processing..." : "Send"}
+              </button>
             </form>
           </div>
         </div>
