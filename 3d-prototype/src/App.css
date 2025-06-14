@@ -1,0 +1,118 @@
+.app-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Split Layout */
+.split-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Visualization Area (Left Side) */
+.visualization-area {
+  flex: 3; /* Takes 60% of the width */
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-right: 1px solid #ccc;
+}
+
+/* Agent Area (Right Side) */
+.agent-area {
+  flex: 2; /* Takes 40% of the width */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #f8f9fa;
+}
+
+.agent-header {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f0f0f0;
+}
+
+.agent-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.agent-content {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.placeholder-content {
+  min-height: 200px;
+}
+
+/* User Input Area */
+.user-input-area {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.user-input-area form {
+  display: flex;
+  gap: 10px;
+}
+
+.user-input-area input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.user-input-area button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.user-input-area button:hover {
+  background-color: #45a049;
+}
+
+/* Loading State */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: #333;
+}
+
+/* Controls for 3D visualization */
+.controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.controls h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.controls p {
+  margin: 5px 0;
+} 
