@@ -1,12 +1,11 @@
-import React, { useState, useEffect, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment } from '@react-three/drei';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
-import CuboidModel from './components/CuboidModel';
+import SchemeGrid from './components/SchemeGrid';
 import AgentSession from './components/AgentSession';
 import mockAgentService from './services/mockAgentService';
 import './components/AgentSession.css';
+import './components/SchemeGrid.css';
 
 // API URL for the backend
 const API_URL = "http://localhost:8002";
@@ -89,41 +88,16 @@ function App() {
       <div className="split-layout">
         {/* Visualization Area (Left Side) */}
         <div className="visualization-area">
-          <div className="controls">
+          <div className="vis-header">
             <h3>3D Visualization</h3>
-            <p>Use mouse to rotate, scroll to zoom</p>
-            <p>Click on cuboids to animate</p>
+            <p>Click and drag to rotate, scroll to zoom, click on cuboids to animate</p>
           </div>
           
-          <Canvas camera={{ position: [0, 2, 10], fov: 60 }}>
-            <ambientLight intensity={0.5} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <directionalLight position={[-10, -10, -5]} intensity={0.5} />
-            
-            <Suspense fallback={null}>
-              <Environment preset="city" />
-              
-              {/* Render each cuboid from the data */}
-              {cuboids.map((cuboid) => (
-                <CuboidModel 
-                  key={cuboid.id}
-                  width={cuboid.width}
-                  height={cuboid.height}
-                  depth={cuboid.depth}
-                  position={[cuboid.position_x, cuboid.position_y, cuboid.position_z]}
-                  color={cuboid.color}
-                />
-              ))}
-              
-              {/* Ground plane */}
-              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
-                <planeGeometry args={[100, 100]} />
-                <shadowMaterial opacity={0.4} />
-              </mesh>
-            </Suspense>
-            
-            <OrbitControls />
-          </Canvas>
+          {/* Add scrollable container */}
+          <div className="visualization-content">
+            {/* Use the SchemeGrid component */}
+            <SchemeGrid schemes={cuboids} />
+          </div>
         </div>
         
         {/* Agent Area (Right Side) */}

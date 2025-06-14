@@ -15,9 +15,10 @@
 /* Visualization Area (Left Side) */
 .visualization-area {
   flex: 3; /* Takes 60% of the width */
-  position: relative;
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* Hide overflow on the container */
   border-right: 1px solid #ccc;
 }
 
@@ -132,4 +133,31 @@
 
 .agent-placeholder p {
   margin: 8px 0;
+}
+
+.vis-header {
+  background-color: #333;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.vis-header h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+}
+
+.vis-header p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Create a scrollable container for the grid */
+.visualization-content {
+  flex: 1;
+  overflow: auto; /* Add scrollbars when content overflows */
+  position: relative;
 } 

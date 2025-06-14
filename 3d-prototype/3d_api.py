@@ -24,14 +24,14 @@ class Cuboid(BaseModel):
     position_z: float
     color: str
 
-# Hardcoded cuboid data
+# Hardcoded cuboid data - now with 6 schemes
 cuboids = [
     Cuboid(
         id=1,
         width=2,
         height=1,
         depth=1,
-        position_x=-3,
+        position_x=0,
         position_y=0,
         position_z=0,
         color="#ff4040"  # Red
@@ -41,7 +41,7 @@ cuboids = [
         width=1,
         height=2,
         depth=1,
-        position_x=-1,
+        position_x=0,
         position_y=0,
         position_z=0,
         color="#40ff40"  # Green
@@ -51,7 +51,7 @@ cuboids = [
         width=1,
         height=1,
         depth=2,
-        position_x=1,
+        position_x=0,
         position_y=0,
         position_z=0,
         color="#4040ff"  # Blue
@@ -61,10 +61,30 @@ cuboids = [
         width=1.5,
         height=1.5,
         depth=1.5,
-        position_x=3,
+        position_x=0,
         position_y=0,
         position_z=0,
         color="#ffff40"  # Yellow
+    ),
+    Cuboid(
+        id=5,
+        width=2,
+        height=1.5,
+        depth=0.8,
+        position_x=0,
+        position_y=0,
+        position_z=0,
+        color="#ff40ff"  # Purple
+    ),
+    Cuboid(
+        id=6,
+        width=0.8,
+        height=2.5,
+        depth=1.2,
+        position_x=0,
+        position_y=0,
+        position_z=0,
+        color="#40ffff"  # Cyan
     ),
 ]
 
