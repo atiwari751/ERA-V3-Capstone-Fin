@@ -3,6 +3,17 @@ import sys
 import time
 import signal
 import os
+import locale
+
+# Set UTF-8 encoding for the current process
+if sys.platform == 'win32':
+    # Set console code page to UTF-8
+    subprocess.run(['chcp', '65001'], shell=True, check=False)
+    # Also set Python's encoding for stdout/stderr
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+    # Set locale
+    locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 def start_apis():
     """Start both the main API and the scheme API"""
@@ -12,15 +23,19 @@ def start_apis():
     logs_dir = os.path.join(os.getcwd(), "logs")
     os.makedirs(logs_dir, exist_ok=True)
     
+    # Prepare environment with explicit encoding settings
+    env = os.environ.copy()
+    env['PYTHONIOENCODING'] = 'utf-8'
+    
     # Start the main API with output redirection
-    main_api_stdout = open(os.path.join(logs_dir, "main_api_stdout.log"), "w")
-    main_api_stderr = open(os.path.join(logs_dir, "main_api_stderr.log"), "w")
+    main_api_stdout = open(os.path.join(logs_dir, "main_api_stdout.log"), "w", encoding='utf-8')
+    main_api_stderr = open(os.path.join(logs_dir, "main_api_stderr.log"), "w", encoding='utf-8')
     
     main_api = subprocess.Popen(
         [sys.executable, "api.py"],
         stdout=main_api_stdout,
         stderr=main_api_stderr,
-        env=os.environ.copy()
+        env=env
     )
     print(f"Main API started with PID {main_api.pid}")
     
@@ -34,14 +49,14 @@ def start_apis():
         return None, None
     
     # Start the scheme API with output redirection
-    scheme_api_stdout = open(os.path.join(logs_dir, "scheme_api_stdout.log"), "w")
-    scheme_api_stderr = open(os.path.join(logs_dir, "scheme_api_stderr.log"), "w")
+    scheme_api_stdout = open(os.path.join(logs_dir, "scheme_api_stdout.log"), "w", encoding='utf-8')
+    scheme_api_stderr = open(os.path.join(logs_dir, "scheme_api_stderr.log"), "w", encoding='utf-8')
     
     scheme_api = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "scheme_api:app", "--host", "0.0.0.0", "--port", "8002"],
         stdout=scheme_api_stdout,
         stderr=scheme_api_stderr,
-        env=os.environ.copy()
+        env=env
     )
     print(f"Scheme API started with PID {scheme_api.pid}")
     

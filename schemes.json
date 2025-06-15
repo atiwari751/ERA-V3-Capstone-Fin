@@ -361,9 +361,9 @@
       "width": 3.0,
       "height": 0.9,
       "depth": 2.4,
-      "position_x": 0,
-      "position_y": 0,
-      "position_z": 0,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
       "color": "#40ff80"
     },
     {
@@ -385,9 +385,9 @@
       "width": 3.0,
       "height": 0.9,
       "depth": 2.4,
-      "position_x": 0,
-      "position_y": 0,
-      "position_z": 0,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
       "color": "#8040ff"
     },
     {
@@ -409,13 +409,235 @@
       "width": 3.0,
       "height": 0.9,
       "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#ff4080"
+    },
+    {
+      "id": 20,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": null,
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#ff4040"
+    },
+    {
+      "id": 21,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 42.828,
+        "column_size": 369.0,
+        "structural_depth": 1145.0,
+        "concrete_tonnage": 666.67,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#40ff40"
+    },
+    {
+      "id": 22,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": null,
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#4040ff"
+    },
+    {
+      "id": 23,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 42.341,
+        "column_size": 369.0,
+        "structural_depth": 1125.0,
+        "concrete_tonnage": 666.67,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#ffff40"
+    },
+    {
+      "id": 24,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": null,
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#ff40ff"
+    },
+    {
+      "id": 25,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 42.506,
+        "column_size": 369.0,
+        "structural_depth": 1147.0,
+        "concrete_tonnage": 666.67,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#40ffff"
+    },
+    {
+      "id": 26,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 27.214,
+        "column_size": 240.0,
+        "structural_depth": 609.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#ff8040"
+    },
+    {
+      "id": 27,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 27.051,
+        "column_size": 240.0,
+        "structural_depth": 607.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#40ff80"
+    },
+    {
+      "id": 28,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 43.012,
+        "column_size": 370.0,
+        "structural_depth": 1163.0,
+        "concrete_tonnage": 666.67,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#8040ff"
+    },
+    {
+      "id": 29,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 27.003,
+        "column_size": 240.0,
+        "structural_depth": 608.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
       "position_x": 0,
       "position_y": 0,
       "position_z": 0,
       "color": "#ff4080"
     },
     {
-      "id": 20,
+      "id": 30,
       "parameters": {
         "grid_spacing_x": "6",
         "grid_spacing_y": "7",
