@@ -10,6 +10,7 @@ import datetime
 import uuid
 import json
 import requests
+import time
 
 # Import directly from agent's dependencies instead of importing agent module
 from perception import extract_perception
@@ -52,15 +53,49 @@ def start_mcp_server():
     global mcp_server_process
     if mcp_server_process is None or mcp_server_process.poll() is not None:
         print("Starting MCP server...")
-        mcp_server_process = subprocess.Popen(
-            [sys.executable, "mcp-server.py"],
-            cwd="./",
-            stdout=None,
-            stderr=None,
-        )
-        print(f"MCP server started with PID {mcp_server_process.pid}")
-        return True
-    return False
+        try:
+            # Use absolute path to the Python executable and script
+            python_exe = sys.executable
+            script_path = os.path.join(os.getcwd(), "mcp-server.py")
+            
+            # Ensure the script exists
+            if not os.path.exists(script_path):
+                print(f"ERROR: MCP server script not found at {script_path}")
+                return False
+                
+            # Start the process with stdout and stderr redirected to files for debugging
+            log_dir = os.path.join(os.getcwd(), "logs")
+            os.makedirs(log_dir, exist_ok=True)
+            
+            stdout_file = open(os.path.join(log_dir, "mcp_stdout.log"), "w")
+            stderr_file = open(os.path.join(log_dir, "mcp_stderr.log"), "w")
+            
+            mcp_server_process = subprocess.Popen(
+                [python_exe, script_path],
+                cwd=os.getcwd(),
+                stdout=stdout_file,
+                stderr=stderr_file,
+                # Pass environment variables
+                env=os.environ.copy()
+            )
+            
+            # Wait a moment to ensure the server starts
+            time.sleep(2)
+            
+            # Check if the process is still running
+            if mcp_server_process.poll() is not None:
+                print(f"ERROR: MCP server failed to start. Exit code: {mcp_server_process.returncode}")
+                print("Check logs in the logs directory for details.")
+                return False
+                
+            print(f"MCP server started with PID {mcp_server_process.pid}")
+            return True
+        except Exception as e:
+            print(f"ERROR starting MCP server: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    return True
 
 def stop_mcp_server():
     """Stop the MCP server subprocess"""
@@ -216,6 +251,47 @@ async def process_agent_directly(session_id: str, query: str):
                             # Actually execute the tool
                             result = await execute_tool(session, tools, plan)
                             log("tool", f"{result.tool_name} returned: {result.result}")
+                            
+                            # Check if this is an AiForm tool call
+                            if "ai_form_schemer" in result.tool_name.lower():
+                                # Extract parameters from the tool arguments
+                                try:
+                                    # Parse the arguments to extract scheme parameters
+                                    arg_dict = {}
+                                    if isinstance(result.arguments, dict):
+                                        arg_dict = result.arguments
+                                    elif isinstance(result.result, str):
+                                        # Try to extract parameters from the result string
+                                        import re
+                                        # Look for parameter patterns like "extents_x=30"
+                                        param_matches = re.findall(r'(\w+)=(\d+(?:\.\d+)?)', result.result)
+                                        for param, value in param_matches:
+                                            arg_dict[param] = value
+                                        
+                                        # Also try to extract JSON from the result
+                                        json_match = re.search(r'\{.*\}', result.result)
+                                        if json_match:
+                                            import json
+                                            try:
+                                                json_data = json.loads(json_match.group(0))
+                                                arg_dict.update(json_data)
+                                            except:
+                                                pass
+                                    
+                                    # Create a new scheme if we have parameters
+                                    if arg_dict:
+                                        # Create scheme from parameters
+                                        new_scheme = scheme_service.create_scheme_from_agent_data(arg_dict)
+                                        
+                                        # Add to session schemes
+                                        if "schemes" not in sessions[session_id]:
+                                            sessions[session_id]["schemes"] = []
+                                        
+                                        scheme_dict = new_scheme.dict()
+                                        sessions[session_id]["schemes"].append(scheme_dict)
+                                        log("schemes", f"Created new scheme from AiForm tool: {new_scheme.id}")
+                                except Exception as e:
+                                    log("error", f"Failed to create scheme from AiForm: {e}")
                             
                             # Update the result in session with completed status
                             sessions[session_id]["results"][f"tool_{step}"] = {

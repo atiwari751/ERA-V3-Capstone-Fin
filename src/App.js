@@ -80,6 +80,21 @@ function App() {
       setSessionStatus(data.status);
       setFinalAnswer(data.final_answer);
       
+      // Check if schemes have changed
+      if (data.schemes && data.schemes.length > 0) {
+        setSchemes(prevSchemes => {
+          // Merge new schemes with existing ones, avoiding duplicates
+          const existingIds = new Set(prevSchemes.map(s => s.id));
+          const newSchemes = data.schemes.filter(s => !existingIds.has(s.id));
+          
+          if (newSchemes.length > 0) {
+            console.log(`Received ${newSchemes.length} new schemes from agent`);
+            return [...prevSchemes, ...newSchemes];
+          }
+          return prevSchemes;
+        });
+      }
+      
       // Stop polling if the agent has completed or encountered an error
       if (data.status === 'completed' || data.status === 'error') {
         setPollingActive(false);
@@ -128,6 +143,10 @@ function App() {
       setSessionStatus('running');
       setSessionResults({});
       setFinalAnswer(null);
+      
+      // Clear existing schemes when starting a new query
+      // We'll get new schemes from the agent API
+      setSchemes([]);
     } catch (error) {
       console.error("Error processing query:", error);
       
@@ -152,6 +171,15 @@ function App() {
     setFinalAnswer(null);
     setPollingActive(false);
     setIsProcessing(false);
+    
+    // Load initial schemes
+    try {
+      const schemeData = getAllSchemes();
+      setSchemes(schemeData);
+    } catch (err) {
+      console.error("Error loading schemes:", err);
+      setSchemes([]);
+    }
   };
 
   // For development/testing - uncomment to show mock data immediately

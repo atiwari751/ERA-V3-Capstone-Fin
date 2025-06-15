@@ -1,0 +1,17 @@
+C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\.venv\lib\site-packages\pydub\utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+  warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+[06/15/25 20:28:01] INFO     STARTING THE SERVER              mcp-server.py:532
+                    INFO     Starting server thread with      mcp-server.py:549
+                             stdio transport                                   
+[06/15/25 20:28:03] INFO     Starting document processing     mcp-server.py:568
+INFO: Indexing documents with MarkItDown...
+SKIP: Skipping unchanged file: AD3_Indian_Institute_of_Technology_Hyderabad_Telangana.pdf
+SKIP: Skipping unchanged file: Construction_of_Treasury_Building_at_Kuthar_Himachal_Pradesh_case_study_card.pdf
+SKIP: Skipping unchanged file: New_Maharshtra_Sadan_New_Delhi.pdf
+SKIP: Skipping unchanged file: NLC_case_study_card_final.pdf
+SKIP: Skipping unchanged file: Patna_Divisional_Office_1_LIC_of_India_Jeevan_Prakash_Building_Patna.pdf
+SKIP: Skipping unchanged file: SVA_GRIHA_K_M_Trans_Logistics_Headquarter_Building.pdf
+SKIP: Skipping unchanged file: SVA_GRIHA_Rating_Report_Sub_Treasury_Office_Building_Fatehpur.pdf
+SUCCESS: Saved FAISS index and metadata
+                    INFO     Document processing completed    mcp-server.py:570
+                    INFO     Main thread waiting...           mcp-server.py:577

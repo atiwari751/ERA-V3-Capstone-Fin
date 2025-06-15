@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './FallbackSchemeGrid.css';
 
 // Component for displaying scheme details in a side panel
@@ -189,6 +189,18 @@ const FallbackSchemeGrid = ({ schemes = [] }) => {
   const [selectedScheme, setSelectedScheme] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+  // Close details panel when schemes change
+  useEffect(() => {
+    if (selectedScheme) {
+      // Check if the selected scheme still exists
+      const schemeExists = schemes.some(scheme => scheme.id === selectedScheme.id);
+      if (!schemeExists) {
+        setSelectedScheme(null);
+        setIsDetailsOpen(false);
+      }
+    }
+  }, [schemes, selectedScheme]);
+
   const handleSchemeClick = (scheme, index) => {
     const safeScheme = {
       ...scheme,
@@ -211,7 +223,7 @@ const FallbackSchemeGrid = ({ schemes = [] }) => {
       <div className="scheme-grid-fallback">
         {schemes.map((scheme, index) => (
           <SchemeCuboid 
-            key={index} 
+            key={`scheme-${scheme.id || index}`} 
             scheme={scheme} 
             index={index}
             onClick={handleSchemeClick}
