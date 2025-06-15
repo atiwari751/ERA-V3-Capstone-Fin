@@ -8,32 +8,6 @@ import { getAllSchemes } from './services/mockSchemeData';
 // API URL for the backend
 const API_URL = "http://localhost:8001"; // FastAPI backend URL
 
-// Mock data for testing
-const mockSessionResults = {
-  "1": { 
-    tool: "search_building_types", 
-    status: "Finished", 
-    result: "Found residential building types:\n- Single family home\n- Duplex\n- Townhouse\n- Apartment building" 
-  },
-  "2": { 
-    tool: "analyze_residential_requirements", 
-    status: "Finished", 
-    result: "Standard residential requirements:\n- Minimum bedroom size: 70 sq ft\n- Minimum ceiling height: 7 ft\n- Egress requirements for bedrooms\n- Kitchen and bathroom ventilation" 
-  },
-  "3": { 
-    tool: "generate_house_design", 
-    status: "Finished", 
-    result: "Generated basic house design with:\n- 3 bedrooms\n- 2 bathrooms\n- Open concept kitchen/living area\n- 2-car garage\n- Total area: 1,800 sq ft" 
-  },
-  "4": { 
-    tool: "calculate_energy_efficiency", 
-    status: "Finished", 
-    result: "Energy efficiency calculation:\n- Insulation R-value: 19 (walls), 38 (roof)\n- Window efficiency: U-factor 0.30\n- HVAC efficiency: 16 SEER\n- Estimated energy consumption: 45 kWh/m²/year" 
-  }
-};
-
-const mockFinalAnswer = "I've designed a 1,800 sq ft single-family home with 3 bedrooms and 2 bathrooms. The design features an open concept living area, energy-efficient appliances, and meets all standard residential building codes. The estimated energy consumption is 45 kWh/m²/year, which qualifies for an A energy rating.";
-
 function App() {
   // State for schemes/cuboids
   const [schemes, setSchemes] = useState([]);
@@ -119,7 +93,6 @@ function App() {
     setIsProcessing(true);
     
     try {
-      // Try to connect to the real API
       const response = await axios.post(`${API_URL}/query`, { query: userPrompt });
       const data = response.data;
       
@@ -130,13 +103,6 @@ function App() {
       setFinalAnswer(null);
     } catch (error) {
       console.error("Error processing query:", error);
-      
-      // Fallback to mock data if API is not available
-      console.log("Using mock data instead");
-      setSessionId("session-7qcohqhkte");
-      setSessionStatus('completed');
-      setSessionResults(mockSessionResults);
-      setFinalAnswer(mockFinalAnswer);
       setIsProcessing(false);
     }
     
@@ -153,14 +119,6 @@ function App() {
     setPollingActive(false);
     setIsProcessing(false);
   };
-
-  // For development/testing - uncomment to show mock data immediately
-  // useEffect(() => {
-  //   setSessionId("session-7qcohqhkte");
-  //   setSessionStatus('completed');
-  //   setSessionResults(mockSessionResults);
-  //   setFinalAnswer(mockFinalAnswer);
-  // }, []);
 
   if (loading) {
     return <div className="loading">Loading schemes...</div>;

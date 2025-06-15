@@ -1,19 +1,179 @@
 /* Main app container */
-.app {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  max-width: 1200px;
-  margin: 0 auto;
+.app-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Split Layout */
+.split-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* Visualization Area (Left Side) */
+.visualization-area {
+  flex: 3; /* Takes 60% of the width */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-right: 1px solid #ccc;
+  background-color: white;
+}
+
+/* Agent Area (Right Side) */
+.agent-area {
+  flex: 2; /* Takes 40% of the width */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #f8f9fa;
+}
+
+.agent-header {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f0f0f0;
+}
+
+.agent-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.agent-content {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.placeholder-content {
+  min-height: 200px;
+}
+
+/* User Input Area */
+.user-input-area {
+  padding: 15px;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.user-input-area form {
+  display: flex;
+  gap: 10px;
+}
+
+.user-input-area input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.user-input-area button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.user-input-area button:hover {
+  background-color: #45a049;
+}
+
+/* Loading State */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  color: #333;
+}
+
+/* Controls for 3D visualization */
+.controls {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 10;
+}
+
+.controls h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.controls p {
+  margin: 5px 0;
+}
+
+.agent-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  text-align: center;
+  color: #666;
+  background-color: #f5f5f5;
+  border-radius: 8px;
   padding: 20px;
 }
 
-header h1 {
-  color: #333;
-  margin-bottom: 30px;
+.agent-placeholder p {
+  margin: 8px 0;
+}
+
+.vis-header {
+  background-color: #333;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.vis-header h3 {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+}
+
+.vis-header p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* Create a scrollable container for the grid */
+.visualization-content {
+  flex: 1;
+  overflow: auto; /* Add scrollbars when content overflows */
+  position: relative;
+  padding: 0;
+  background-color: white;
 }
 
 /* Query container */
 .query-container {
   margin-bottom: 30px;
+}
+
+.query-container h2 {
+  margin-top: 0;
 }
 
 .query-container textarea {
@@ -138,8 +298,36 @@ hr {
 }
 
 /* Footer */
-footer {
-  margin-top: 40px;
+.app-footer {
+  padding: 15px 20px;
   color: #666;
   font-size: 14px;
+  background-color: #f8f8f8;
+  border-top: 1px solid #e0e0e0;
+}
+
+.app-footer hr {
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .app-content {
+    flex-direction: column;
+  }
+  
+  .conversation-column,
+  .visualization-column {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .conversation-column {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .visualization-container {
+    height: 500px;
+  }
 } 

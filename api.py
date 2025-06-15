@@ -9,6 +9,7 @@ import os
 import datetime
 import uuid
 import json
+import requests
 
 # Import directly from agent's dependencies instead of importing agent module
 from perception import extract_perception
@@ -17,6 +18,9 @@ from decision import generate_plan
 from action import execute_tool
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+
+# Import scheme service for integration
+from scheme_service import scheme_service
 
 app = FastAPI(title="Agent API")
 
@@ -34,6 +38,9 @@ sessions = {}
 
 # MCP server process management
 mcp_server_process = None
+
+# Scheme API URL
+SCHEME_API_URL = "http://localhost:8002"
 
 def log(stage: str, msg: str):
     """Logging function similar to agent.py"""
@@ -81,6 +88,7 @@ class SessionStatusResponse(BaseModel):
     status: str
     results: Optional[Dict[str, Any]] = None
     final_answer: Optional[str] = None
+    schemes: Optional[List[Dict[str, Any]]] = None
 
 async def process_agent_directly(session_id: str, query: str):
     """Process an agent query directly without using agent.py module"""
@@ -91,6 +99,7 @@ async def process_agent_directly(session_id: str, query: str):
                 "status": "initializing",
                 "results": {},
                 "final_answer": None,
+                "schemes": []
             }
         
         # Define constants
@@ -181,6 +190,12 @@ async def process_agent_directly(session_id: str, query: str):
                             log("agent", f"✅ FINAL RESULT: {final_answer}")
                             sessions[session_id]["status"] = "completed"
                             sessions[session_id]["final_answer"] = final_answer
+                            
+                            # Process any schemes from the results
+                            new_schemes = scheme_service.add_schemes_from_agent_results(sessions[session_id]["results"])
+                            if new_schemes:
+                                log("schemes", f"Added {len(new_schemes)} schemes from agent results")
+                                sessions[session_id]["schemes"] = [scheme.dict() for scheme in new_schemes]
                             break
                         
                         # Execute tool
@@ -298,7 +313,8 @@ async def run_agent_task(session_id: str, query: str):
         sessions[session_id] = {
             "status": "initializing",
             "results": {},
-            "final_answer": None
+            "final_answer": None,
+            "schemes": []
         }
         
         # Process the agent directly
@@ -328,8 +344,21 @@ async def get_session_status(session_id: str):
     return {
         "status": session_data["status"],
         "results": session_data["results"],
-        "final_answer": session_data["final_answer"]
+        "final_answer": session_data["final_answer"],
+        "schemes": session_data.get("schemes", [])
     }
+
+@app.get("/schemes", response_model=List[Dict[str, Any]])
+async def get_schemes():
+    """Get all schemes from the scheme service"""
+    schemes = scheme_service.get_schemes()
+    return [scheme.dict() for scheme in schemes]
+
+@app.post("/schemes/clear")
+async def clear_schemes():
+    """Clear all schemes"""
+    scheme_service.clear_schemes()
+    return {"message": "All schemes cleared"}
 
 @app.get("/health")
 async def health_check():

@@ -1,0 +1,178 @@
+{
+  "schemes": [
+    {
+      "id": 1,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 27.02,
+        "column_size": 239.0,
+        "structural_depth": 604.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#40ff40"
+    },
+    {
+      "id": 2,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": null,
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0.0,
+      "position_y": 0.0,
+      "position_z": 0.0,
+      "color": "#4040ff"
+    },
+    {
+      "id": 3,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 27.176,
+        "column_size": 241.0,
+        "structural_depth": 614.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#ffff40"
+    },
+    {
+      "id": 4,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": null,
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#ff40ff"
+    },
+    {
+      "id": 5,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 26.878,
+        "column_size": 240.0,
+        "structural_depth": 609.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#40ffff"
+    },
+    {
+      "id": 6,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": null,
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#ff8040"
+    },
+    {
+      "id": 7,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 27.645,
+        "column_size": 227.0,
+        "structural_depth": 574.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#40ff80"
+    },
+    {
+      "id": 8,
+      "parameters": {
+        "grid_spacing_x": "6",
+        "grid_spacing_y": "7",
+        "extents_x": "30",
+        "extents_y": "24",
+        "no_of_floors": "3"
+      },
+      "evaluations": {
+        "steel_tonnage": 30.91,
+        "column_size": 287.0,
+        "structural_depth": 645.0,
+        "concrete_tonnage": 541.67,
+        "total_emissions": "unknown"
+      },
+      "width": 3.0,
+      "height": 0.9,
+      "depth": 2.4,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
+      "color": "#8040ff"
+    }
+  ]
+}
