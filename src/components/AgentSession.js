@@ -8,6 +8,8 @@ const ToolResult = ({ toolName, status, result }) => {
   // Status indicators
   let statusIndicator = null;
   if (status === 'Finished') statusIndicator = '✅';
+  else if (status === 'Running') statusIndicator = '⏳';
+  else if (status === 'Error') statusIndicator = '❌';
   
   // Toggle expanded state
   const toggleExpanded = () => {
@@ -17,7 +19,13 @@ const ToolResult = ({ toolName, status, result }) => {
   return (
     <div className="tool-result">
       <div className="tool-summary" onClick={toggleExpanded}>
-        {isExpanded ? '▼' : '▶'} Tool: {toolName} - {statusIndicator && statusIndicator} {status}
+        {isExpanded ? '▼' : '▶'} 
+        <div className="tool-info">
+          <span className="tool-name">Tool: {toolName}</span>
+          <span className="tool-status">
+            {statusIndicator && statusIndicator} {status}
+          </span>
+        </div>
       </div>
       
       {isExpanded && (

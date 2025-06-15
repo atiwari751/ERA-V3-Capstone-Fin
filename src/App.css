@@ -17,6 +17,7 @@
 /* Visualization Area (Left Side) */
 .visualization-area {
   flex: 3; /* Takes 60% of the width */
+  min-width: 60%;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -28,6 +29,7 @@
 /* Agent Area (Right Side) */
 .agent-area {
   flex: 2; /* Takes 40% of the width */
+  max-width: 40%;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -50,6 +52,7 @@
   flex: 1;
   padding: 15px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .placeholder-content {
