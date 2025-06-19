@@ -98,9 +98,8 @@ def stop_apis(main_api, scheme_api):
             scheme_api.kill()
         print("Scheme API stopped")
 
-def handle_signal(sig, frame):
-    """Handle Ctrl+C"""
-    print("\nReceived signal to terminate")
+def signal_handler(sig, frame):
+    print("\nShutting down gracefully...")
     stop_apis(main_api, scheme_api)
     sys.exit(0)
 
@@ -117,8 +116,8 @@ def print_log_tail(log_file, lines=10):
 
 if __name__ == "__main__":
     # Register signal handler for clean shutdown
-    signal.signal(signal.SIGINT, handle_signal)
-    signal.signal(signal.SIGTERM, handle_signal)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     
     main_api = None
     scheme_api = None

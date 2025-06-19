@@ -227,11 +227,6 @@ async def process_agent_directly(session_id: str, query: str):
                             sessions[session_id]["status"] = "completed"
                             sessions[session_id]["final_answer"] = final_answer
                             
-                            # Process any schemes from the results
-                            new_schemes = scheme_service.add_schemes_from_agent_results(sessions[session_id]["results"])
-                            if new_schemes:
-                                log("schemes", f"Added {len(new_schemes)} schemes from agent results")
-                                sessions[session_id]["schemes"] = [scheme.dict() for scheme in new_schemes]
                             break
                         
                         # Execute tool

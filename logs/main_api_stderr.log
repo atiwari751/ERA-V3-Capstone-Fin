@@ -1,29 +1,29 @@
-C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\api.py:555: DeprecationWarning: 
+C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\api.py:550: DeprecationWarning: 
         on_event is deprecated, use lifespan event handlers instead.
 
         Read more about it in the
         [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
         
   @app.on_event("startup")
-C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\api.py:561: DeprecationWarning: 
+C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\api.py:556: DeprecationWarning: 
         on_event is deprecated, use lifespan event handlers instead.
 
         Read more about it in the
         [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
         
   @app.on_event("shutdown")
-INFO:     Started server process [16016]
+INFO:     Started server process [4860]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
 C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\.venv\lib\site-packages\pydub\utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
-[06/19/25 12:39:19] INFO     STARTING THE SERVER              mcp-server.py:532
+[06/19/25 21:52:35] INFO     STARTING THE SERVER              mcp-server.py:532
                     INFO     Starting server thread with      mcp-server.py:549
                              stdio transport                                   
                     INFO     Processing request of type           server.py:534
                              ListToolsRequest                                  
-[06/19/25 12:39:21] INFO     Starting document processing     mcp-server.py:568
+[06/19/25 21:52:37] INFO     Starting document processing     mcp-server.py:568
 INFO: Indexing documents with MarkItDown...
 SKIP: Skipping unchanged file: AD3_Indian_Institute_of_Technology_Hyderabad_Telangana.pdf
 SKIP: Skipping unchanged file: Construction_of_Treasury_Building_at_Kuthar_Himachal_Pradesh_case_study_card.pdf
@@ -35,12 +35,34 @@ SKIP: Skipping unchanged file: SVA_GRIHA_Rating_Report_Sub_Treasury_Office_Build
 SUCCESS: Saved FAISS index and metadata
                     INFO     Document processing completed    mcp-server.py:570
                     INFO     Main thread waiting...           mcp-server.py:577
-                    INFO     Processing request of type           server.py:534
+[06/19/25 21:52:39] INFO     Processing request of type           server.py:534
                              CallToolRequest                                   
-                    INFO     Warning: PydanticDeprecatedSince211: server.py:524
+INFO: AI Form Schema prediction completed successfully
+[06/19/25 21:52:40] INFO     Warning: PydanticDeprecatedSince211: server.py:524
                              Accessing the 'model_fields'                      
                              attribute on the instance is                      
                              deprecated. Instead, you should                   
                              access this attribute from the model              
                              class. Deprecated in Pydantic V2.11               
                              to be removed in V3.0.                            
+[06/19/25 21:52:53] INFO     Processing request of type           server.py:534
+                             CallToolRequest                                   
+INFO: AI Form Schema prediction completed successfully
+[06/19/25 21:52:54] INFO     Warning: PydanticDeprecatedSince211: server.py:524
+                             Accessing the 'model_fields'                      
+                             attribute on the instance is                      
+                             deprecated. Instead, you should                   
+                             access this attribute from the model              
+                             class. Deprecated in Pydantic V2.11               
+                             to be removed in V3.0.                            
+[06/19/25 21:53:02] INFO     Processing request of type           server.py:534
+                             CallToolRequest                                   
+INFO: AI Form Schema prediction completed successfully
+[06/19/25 21:53:03] INFO     Warning: PydanticDeprecatedSince211: server.py:524
+                             Accessing the 'model_fields'                      
+                             attribute on the instance is                      
+                             deprecated. Instead, you should                   
+                             access this attribute from the model              
+                             class. Deprecated in Pydantic V2.11               
+                             to be removed in V3.0.                            
+INFO:     Shutting down
