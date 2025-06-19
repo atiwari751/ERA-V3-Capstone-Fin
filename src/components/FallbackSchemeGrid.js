@@ -132,7 +132,7 @@ const SchemeCuboid = ({ scheme, index, onClick }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="scheme-title-fallback">Scheme {scheme.id || index + 1}</div>
+      <div className="scheme-title-fallback">Scheme {scheme.id}</div>
       <div className="scheme-visual-container">
         <div 
           ref={cuboidRef}
@@ -216,8 +216,7 @@ const FallbackSchemeGrid = ({ schemes = [] }) => {
 
   const handleSchemeClick = (scheme, index) => {
     const safeScheme = {
-      ...scheme,
-      id: scheme.id || index + 1
+      ...scheme
     };
     setSelectedScheme(safeScheme);
     setIsDetailsOpen(true);

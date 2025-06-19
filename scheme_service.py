@@ -21,33 +21,16 @@ SCHEME_COLORS = [
 class SchemeService:
     """Service to manage building schemes"""
     
-    def __init__(self, storage_path: str = "schemes.json"):
-        self.storage_path = storage_path
+    def __init__(self):
         self.schemes: List[Scheme] = []
-        self._load_schemes()
     
     def _load_schemes(self) -> None:
-        """Load schemes from storage if available"""
-        if os.path.exists(self.storage_path):
-            try:
-                with open(self.storage_path, "r") as f:
-                    data = json.load(f)
-                    scheme_list = SchemeList.parse_obj(data)
-                    self.schemes = scheme_list.schemes
-            except Exception as e:
-                print(f"Error loading schemes: {e}")
-                self.schemes = []
-        else:
-            self.schemes = []
+        """Load schemes - now just initializes an empty list"""
+        self.schemes = []
     
     def _save_schemes(self) -> None:
-        """Save schemes to storage"""
-        try:
-            with open(self.storage_path, "w") as f:
-                scheme_list = SchemeList(schemes=self.schemes)
-                json.dump(scheme_list.dict(), f, indent=2)
-        except Exception as e:
-            print(f"Error saving schemes: {e}")
+        """Save schemes - now a no-op since we're not persisting to disk"""
+        pass
     
     def get_schemes(self) -> List[Scheme]:
         """Get all schemes"""
@@ -56,7 +39,6 @@ class SchemeService:
     def clear_schemes(self) -> None:
         """Clear all schemes"""
         self.schemes = []
-        self._save_schemes()
     
     def create_scheme_from_agent_data(self, agent_data: Dict[str, Any]) -> Scheme:
         """Create a scheme from agent data"""
@@ -249,7 +231,6 @@ class SchemeService:
     def add_scheme(self, scheme: Scheme) -> Scheme:
         """Add a scheme to the collection"""
         self.schemes.append(scheme)
-        self._save_schemes()
         return scheme
     
     def add_schemes_from_agent_results(self, agent_results: Dict[str, Any]) -> List[Scheme]:
@@ -315,7 +296,6 @@ class SchemeService:
                     if key in updates:
                         setattr(scheme, key, updates[key])
                 
-                self._save_schemes()
                 return scheme
         
         return None

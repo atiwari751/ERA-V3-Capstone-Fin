@@ -1,9 +1,9 @@
 C:\Users\51118\Documents\ERA V3\Capstone\Milestone1\.venv\lib\site-packages\pydub\utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
   warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
-[06/19/25 21:50:43] INFO     STARTING THE SERVER              mcp-server.py:532
+[06/19/25 22:34:40] INFO     STARTING THE SERVER              mcp-server.py:532
                     INFO     Starting server thread with      mcp-server.py:549
                              stdio transport                                   
-[06/19/25 21:50:45] INFO     Starting document processing     mcp-server.py:568
+[06/19/25 22:34:42] INFO     Starting document processing     mcp-server.py:568
 INFO: Indexing documents with MarkItDown...
 SKIP: Skipping unchanged file: AD3_Indian_Institute_of_Technology_Hyderabad_Telangana.pdf
 SKIP: Skipping unchanged file: Construction_of_Treasury_Building_at_Kuthar_Himachal_Pradesh_case_study_card.pdf
@@ -15,10 +15,10 @@ SKIP: Skipping unchanged file: SVA_GRIHA_Rating_Report_Sub_Treasury_Office_Build
 SUCCESS: Saved FAISS index and metadata
                     INFO     Document processing completed    mcp-server.py:570
                     INFO     Main thread waiting...           mcp-server.py:577
-[06/19/25 22:07:38] INFO     Received keyboard interrupt,     mcp-server.py:581
+[06/19/25 22:37:52] INFO     Received keyboard interrupt,     mcp-server.py:581
                              shutting down...                                  
 Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedReader name='<stdin>'> at interpreter shutdown, possibly due to daemon threads
-Python runtime state: finalizing (tstate=0x000002673730bad0)
+Python runtime state: finalizing (tstate=0x00000206dcf3d670)
 
-Current thread 0x000041b8 (most recent call first):
+Current thread 0x00000a98 (most recent call first):
   <no Python frame>
