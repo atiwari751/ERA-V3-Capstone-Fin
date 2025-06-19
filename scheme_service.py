@@ -88,21 +88,28 @@ class SchemeService:
             # Choose a color
             color = SCHEME_COLORS[new_id % len(SCHEME_COLORS)]
             
-            # Calculate dimensions based on parameters
+            # Calculate dimensions based on parameters - use actual values without scaling down
+            # This matches the requested behavior:
+            # - length of cuboid = extents_x
+            # - width of cuboid = extents_y
+            # - height of cuboid = no_of_floors x 3
             extents_x = self._to_float(parameters.extents_x)
             extents_y = self._to_float(parameters.extents_y)
             floors = self._to_int(parameters.no_of_floors)
             
-            # Create the scheme
+            # Create the scheme with proper dimensions
             scheme = Scheme(
                 id=new_id,
                 parameters=parameters,
                 evaluations=evaluations,
-                width=extents_x / 10,  # Scale down for visualization
-                depth=extents_y / 10,  # Scale down for visualization
-                height=floors * 3 / 10,  # Scale down for visualization (3m per floor)
+                width=extents_x,  # Use actual extents_x value
+                depth=extents_y,  # Use actual extents_y value
+                height=floors * 3,  # Height = floors * 3 meters per floor
                 color=color
             )
+            
+            # Debug log
+            print(f"Created scheme {new_id} with dimensions: {extents_x}x{extents_y}x{floors*3}")
             
             return scheme
         
@@ -135,8 +142,11 @@ class SchemeService:
             return int(value)
         
         if isinstance(value, str):
+            # Remove any non-numeric characters
+            value = ''.join(c for c in value if c.isdigit() or c == '.')
             try:
-                return int(value)
+                # First try as int
+                return int(float(value))
             except ValueError:
                 pass
         
@@ -144,10 +154,39 @@ class SchemeService:
     
     def _extract_value(self, data: Dict[str, Any], key: str, default: str) -> Union[str, float, int]:
         """Extract a value from agent data with proper type conversion"""
-        if key not in data:
-            return default
-        
-        value = data[key]
+        # Check for direct key match
+        if key in data:
+            value = data[key]
+        else:
+            # Check for case-insensitive match or alternative names
+            alt_keys = {
+                "extents_x": ["width", "building_width", "x_extent", "x_dimension"],
+                "extents_y": ["depth", "building_depth", "y_extent", "y_dimension"],
+                "grid_spacing_x": ["x_grid", "grid_x", "column_spacing_x"],
+                "grid_spacing_y": ["y_grid", "grid_y", "column_spacing_y"],
+                "no_of_floors": ["floors", "number_of_floors", "stories", "storeys"]
+            }
+            
+            # Try alternative keys
+            found = False
+            if key in alt_keys:
+                for alt_key in alt_keys[key]:
+                    if alt_key in data:
+                        value = data[alt_key]
+                        found = True
+                        break
+            
+            # Try case-insensitive match
+            if not found:
+                for k in data:
+                    if k.lower() == key.lower():
+                        value = data[k]
+                        found = True
+                        break
+            
+            # Use default if not found
+            if not found:
+                return default
         
         # If value is None or empty, return default
         if value is None or (isinstance(value, str) and not value.strip()):
@@ -160,15 +199,20 @@ class SchemeService:
         # Try to convert string to number
         try:
             # Check if it's an integer
-            if isinstance(value, str) and value.isdigit():
-                return int(value)
-            
-            # Check if it's a float
-            float_val = float(value)
-            return float_val
+            if isinstance(value, str):
+                # Remove any non-numeric characters for better parsing
+                clean_value = ''.join(c for c in value if c.isdigit() or c == '.')
+                if clean_value.isdigit():
+                    return int(clean_value)
+                
+                # Check if it's a float
+                float_val = float(clean_value)
+                return float_val
         except:
             # Return as string if conversion fails
             return str(value)
+        
+        return str(value)
     
     def _create_default_scheme(self) -> Scheme:
         """Create a default scheme when agent data is invalid"""
@@ -196,9 +240,9 @@ class SchemeService:
             id=new_id,
             parameters=parameters,
             evaluations=evaluations,
-            width=3.0,  # 30m / 10
-            depth=2.4,  # 24m / 10
-            height=0.9,  # 3 floors * 3m / 10
+            width=30.0,  # Use actual extents_x value
+            depth=24.0,  # Use actual extents_y value
+            height=9.0,  # 3 floors * 3 meters per floor
             color=color
         )
     

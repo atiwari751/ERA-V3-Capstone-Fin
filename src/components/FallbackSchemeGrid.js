@@ -94,50 +94,37 @@ const SchemeSidePanel = ({ scheme, isOpen, onClose }) => {
 // Interactive cuboid component
 const SchemeCuboid = ({ scheme, index, onClick }) => {
   const [hovered, setHovered] = useState(false);
-  const [rotation, setRotation] = useState({ x: 0, y: 0 });
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [rotation, setRotation] = useState({ x: 20, y: 30 });
   const cuboidRef = useRef(null);
   
   // Handle mouse interactions
   const handleMouseEnter = () => {
     setHovered(true);
-    setIsAnimating(true);
   };
   
   const handleMouseLeave = () => {
     setHovered(false);
-    setIsAnimating(false);
-    setRotation({ x: 0, y: 0 });
   };
   
-  // Animation effect
-  React.useEffect(() => {
-    let animationFrame;
-    
-    if (isAnimating) {
-      const animate = () => {
-        setRotation(prev => ({
-          x: prev.x,
-          y: prev.y + 0.5
-        }));
-        animationFrame = requestAnimationFrame(animate);
-      };
-      
-      animationFrame = requestAnimationFrame(animate);
-    }
-    
-    return () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-    };
-  }, [isAnimating]);
+  // Get dimensions from scheme, with fallbacks
+  const width = parseFloat(scheme.width) || 30;
+  const height = parseFloat(scheme.height) || 9;
+  const depth = parseFloat(scheme.depth) || 24;
+  
+  // Scale factors to keep cuboids reasonably sized in the UI
+  const maxDimension = Math.max(width, height, depth);
+  const scaleFactor = 100 / maxDimension; // Base size of 100px for largest dimension
+  
+  // Scaled dimensions
+  const scaledWidth = width * scaleFactor;
+  const scaledHeight = height * scaleFactor;
+  const scaledDepth = depth * scaleFactor;
   
   // Determine color and styles
   const color = scheme.color || "#4287f5";
   const hoverScale = hovered ? 1.05 : 1;
-  const rotateStyle = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
   
+  // Create a proper isometric view with 3 visible faces
   return (
     <div 
       className="scheme-frame-fallback" 
@@ -145,26 +132,52 @@ const SchemeCuboid = ({ scheme, index, onClick }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="scheme-title-fallback">Scheme {index + 1}</div>
-      <div className="scheme-visual-fallback">
+      <div className="scheme-title-fallback">Scheme {scheme.id || index + 1}</div>
+      <div className="scheme-visual-container">
         <div 
           ref={cuboidRef}
-          className="scheme-cuboid-fallback"
+          className="cuboid-container"
           style={{
-            backgroundColor: color,
-            transform: `${rotateStyle} scale(${hoverScale})`,
-            width: `${Math.min(80, scheme.width * 10)}%`,
-            height: `${Math.min(80, scheme.height * 10)}%`,
-            transition: 'transform 0.2s ease'
+            transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg) scale(${hoverScale})`,
           }}
         >
-          {/* Cuboid faces */}
-          <div className="cuboid-face front" style={{ backgroundColor: color }}></div>
-          <div className="cuboid-face back" style={{ backgroundColor: color, opacity: 0.8 }}></div>
-          <div className="cuboid-face right" style={{ backgroundColor: color, opacity: 0.9 }}></div>
-          <div className="cuboid-face left" style={{ backgroundColor: color, opacity: 0.9 }}></div>
-          <div className="cuboid-face top" style={{ backgroundColor: color, opacity: 0.95 }}></div>
-          <div className="cuboid-face bottom" style={{ backgroundColor: color, opacity: 0.7 }}></div>
+          {/* Top face */}
+          <div 
+            className="cuboid-face cuboid-face-top"
+            style={{
+              width: `${scaledWidth}px`,
+              height: `${scaledDepth}px`,
+              transform: `rotateX(90deg) translateZ(${scaledHeight/2}px)`,
+              backgroundColor: `${color}`,
+            }}
+          />
+          
+          {/* Front face */}
+          <div 
+            className="cuboid-face cuboid-face-front"
+            style={{
+              width: `${scaledWidth}px`,
+              height: `${scaledHeight}px`,
+              transform: `translateZ(${scaledDepth/2}px)`,
+              backgroundColor: `${color}`,
+            }}
+          />
+          
+          {/* Right face */}
+          <div 
+            className="cuboid-face cuboid-face-right"
+            style={{
+              width: `${scaledDepth}px`,
+              height: `${scaledHeight}px`,
+              transform: `rotateY(90deg) translateZ(${scaledWidth/2}px)`,
+              backgroundColor: `${color}`,
+            }}
+          />
+        </div>
+        
+        {/* Display dimensions label */}
+        <div className="scheme-dimensions-label">
+          {width}m × {depth}m × {height}m
         </div>
       </div>
     </div>

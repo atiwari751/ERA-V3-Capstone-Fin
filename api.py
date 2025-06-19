@@ -11,6 +11,7 @@ import uuid
 import json
 import requests
 import time
+import re
 
 # Import directly from agent's dependencies instead of importing agent module
 from perception import extract_perception
@@ -254,42 +255,45 @@ async def process_agent_directly(session_id: str, query: str):
                             
                             # Check if this is an AiForm tool call
                             if "ai_form_schemer" in result.tool_name.lower():
-                                # Extract parameters from the tool arguments
                                 try:
-                                    # Parse the arguments to extract scheme parameters
-                                    arg_dict = {}
-                                    if isinstance(result.arguments, dict):
-                                        arg_dict = result.arguments
-                                    elif isinstance(result.result, str):
-                                        # Try to extract parameters from the result string
-                                        import re
-                                        # Look for parameter patterns like "extents_x=30"
-                                        param_matches = re.findall(r'(\w+)=(\d+(?:\.\d+)?)', result.result)
-                                        for param, value in param_matches:
-                                            arg_dict[param] = value
+                                    # Extract input parameters from the arguments
+                                    if isinstance(result.arguments, dict) and 'input' in result.arguments:
+                                        # Get the input parameters
+                                        input_params = result.arguments['input']
                                         
-                                        # Also try to extract JSON from the result
-                                        json_match = re.search(r'\{.*\}', result.result)
-                                        if json_match:
-                                            import json
+                                        # Create a scheme with these parameters
+                                        scheme_data = {
+                                            "extents_x": input_params.get('extents_x'),
+                                            "extents_y": input_params.get('extents_y'),
+                                            "grid_spacing_x": input_params.get('grid_spacing_x'),
+                                            "grid_spacing_y": input_params.get('grid_spacing_y'),
+                                            "no_of_floors": input_params.get('no_of_floors')
+                                        }
+                                        
+                                        # Extract evaluation metrics from the result
+                                        if isinstance(result.result, str):
                                             try:
-                                                json_data = json.loads(json_match.group(0))
-                                                arg_dict.update(json_data)
-                                            except:
-                                                pass
+                                                # Parse JSON from result
+                                                json_match = re.search(r'\{.*\}', result.result)
+                                                if json_match:
+                                                    json_data = json.loads(json_match.group(0))
+                                                    # Add evaluation metrics to scheme_data
+                                                    for key in ["steel_tonnage", "column_size", "structural_depth", "concrete_tonnage", "trustworthy"]:
+                                                        if key in json_data:
+                                                            scheme_data[key] = json_data[key]
+                                            except Exception as e:
+                                                log("error", f"Failed to parse evaluation metrics from result: {e}")
+                                        
+                                    # Create the scheme
+                                    new_scheme = scheme_service.create_scheme_from_agent_data(scheme_data)
                                     
-                                    # Create a new scheme if we have parameters
-                                    if arg_dict:
-                                        # Create scheme from parameters
-                                        new_scheme = scheme_service.create_scheme_from_agent_data(arg_dict)
-                                        
-                                        # Add to session schemes
-                                        if "schemes" not in sessions[session_id]:
-                                            sessions[session_id]["schemes"] = []
-                                        
-                                        scheme_dict = new_scheme.dict()
-                                        sessions[session_id]["schemes"].append(scheme_dict)
-                                        log("schemes", f"Created new scheme from AiForm tool: {new_scheme.id}")
+                                    # Add to session schemes
+                                    if "schemes" not in sessions[session_id]:
+                                        sessions[session_id]["schemes"] = []
+                                    
+                                    scheme_dict = new_scheme.dict()
+                                    sessions[session_id]["schemes"].append(scheme_dict)
+                                    log("schemes", f"Created new scheme from AiForm tool: {new_scheme.id}")
                                 except Exception as e:
                                     log("error", f"Failed to create scheme from AiForm: {e}")
                             
@@ -299,6 +303,113 @@ async def process_agent_directly(session_id: str, query: str):
                                 "result": str(result.result),
                                 "status": "Finished"
                             }
+                            
+                            # Process result for scheme creation
+                            try:
+                                # Extract scheme data from tool results
+                                scheme_data = {}
+                                
+                                # Case 1: ai_form_schemer tool (already handled above)
+                                if result.tool_name == "ai_form_schemer":
+                                    # Already handled above, no need to duplicate
+                                    pass
+                                
+                                # Case 2: Extract from any tool result that might contain building parameters
+                                elif isinstance(result.result, str):
+                                    # Look for common building parameters in the result string
+                                    param_patterns = {
+                                        "extents_x": r'(?:extents?[_\s-]*x|width|building[_\s]*width)[=:\s]+(\d+(?:\.\d+)?)',
+                                        "extents_y": r'(?:extents?[_\s-]*y|depth|building[_\s]*depth)[=:\s]+(\d+(?:\.\d+)?)',
+                                        "grid_spacing_x": r'(?:grid[_\s-]*spacing[_\s-]*x)[=:\s]+(\d+(?:\.\d+)?)',
+                                        "grid_spacing_y": r'(?:grid[_\s-]*spacing[_\s-]*y)[=:\s]+(\d+(?:\.\d+)?)',
+                                        "no_of_floors": r'(?:floors|no[_\s]*of[_\s]*floors|number[_\s]*of[_\s]*floors|stories|storeys)[=:\s]+(\d+(?:\.\d+)?)'
+                                    }
+                                    
+                                    # Search for each parameter in the result string
+                                    for param, pattern in param_patterns.items():
+                                        match = re.search(pattern, result.result, re.IGNORECASE)
+                                        if match:
+                                            scheme_data[param] = match.group(1)
+                                    
+                                    # Also try to extract JSON from the result
+                                    json_match = re.search(r'\{.*\}', result.result)
+                                    if json_match:
+                                        try:
+                                            json_data = json.loads(json_match.group(0))
+                                            # Extract building parameters if they exist
+                                            for key in ["extents_x", "extents_y", "grid_spacing_x", "grid_spacing_y", "no_of_floors"]:
+                                                if key in json_data:
+                                                    scheme_data[key] = json_data[key]
+                                            
+                                            # Also check for nested parameters
+                                            if "parameters" in json_data and isinstance(json_data["parameters"], dict):
+                                                for key, value in json_data["parameters"].items():
+                                                    scheme_data[key] = value
+                                            
+                                            # Check for evaluations too
+                                            if "evaluations" in json_data and isinstance(json_data["evaluations"], dict):
+                                                for key, value in json_data["evaluations"].items():
+                                                    scheme_data[key] = value
+                                                    
+                                            # Check for building_scheme
+                                            if "building_scheme" in json_data and isinstance(json_data["building_scheme"], dict):
+                                                for key, value in json_data["building_scheme"].items():
+                                                    scheme_data[key] = value
+                                        except:
+                                            pass
+                                
+                                # Case 3: Check for scheme data in the final answer text
+                                elif result.tool_name == "final_answer" and isinstance(result.result, str):
+                                    # Look for scheme patterns in the final answer
+                                    scheme_patterns = [
+                                        r'Scheme\s+\d+:\s+extents_x=(\d+(?:\.\d+)?),\s+extents_y=(\d+(?:\.\d+)?),\s+.*?no_of_floors=(\d+)',
+                                        r'extents_x=(\d+(?:\.\d+)?),\s+extents_y=(\d+(?:\.\d+)?),\s+.*?no_of_floors=(\d+)'
+                                    ]
+                                    
+                                    for pattern in scheme_patterns:
+                                        matches = re.findall(pattern, result.result, re.IGNORECASE)
+                                        for i, match in enumerate(matches):
+                                            if len(match) >= 3:
+                                                scheme_data = {
+                                                    "extents_x": match[0],
+                                                    "extents_y": match[1],
+                                                    "no_of_floors": match[2]
+                                                }
+                                                
+                                                # Create scheme from parameters
+                                                new_scheme = scheme_service.create_scheme_from_agent_data(scheme_data)
+                                                
+                                                # Add to session schemes
+                                                if "schemes" not in sessions[session_id]:
+                                                    sessions[session_id]["schemes"] = []
+                                                
+                                                scheme_dict = new_scheme.dict()
+                                                sessions[session_id]["schemes"].append(scheme_dict)
+                                                log("schemes", f"Created new scheme from final answer: {new_scheme.id}")
+                                
+                                # Create a new scheme if we have enough parameters
+                                required_params = ["extents_x", "extents_y"]
+                                if any(param in scheme_data for param in required_params) and len(scheme_data) >= 2:
+                                    # Set defaults for missing parameters
+                                    if "grid_spacing_x" not in scheme_data:
+                                        scheme_data["grid_spacing_x"] = 6
+                                    if "grid_spacing_y" not in scheme_data:
+                                        scheme_data["grid_spacing_y"] = 6
+                                    if "no_of_floors" not in scheme_data:
+                                        scheme_data["no_of_floors"] = 3
+                                        
+                                    # Create scheme from parameters
+                                    new_scheme = scheme_service.create_scheme_from_agent_data(scheme_data)
+                                    
+                                    # Add to session schemes
+                                    if "schemes" not in sessions[session_id]:
+                                        sessions[session_id]["schemes"] = []
+                                    
+                                    scheme_dict = new_scheme.dict()
+                                    sessions[session_id]["schemes"].append(scheme_dict)
+                                    log("schemes", f"Created new scheme from tool result: {new_scheme.id}")
+                            except Exception as e:
+                                log("error", f"Failed to create scheme from tool result: {e}")
                             
                             # Store important results based on tool type
                             if result.tool_name in ['add', 'subtract', 'multiply', 'divide']:
