@@ -15,3 +15,10 @@ SKIP: Skipping unchanged file: SVA_GRIHA_Rating_Report_Sub_Treasury_Office_Build
 SUCCESS: Saved FAISS index and metadata
                     INFO     Document processing completed    mcp-server.py:570
                     INFO     Main thread waiting...           mcp-server.py:577
+[06/20/25 00:25:42] INFO     Received keyboard interrupt,     mcp-server.py:581
+                             shutting down...                                  
+Fatal Python error: _enter_buffered_busy: could not acquire lock for <_io.BufferedReader name='<stdin>'> at interpreter shutdown, possibly due to daemon threads
+Python runtime state: finalizing (tstate=0x0000023583b9ce20)
+
+Current thread 0x00006230 (most recent call first):
+  <no Python frame>
