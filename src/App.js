@@ -51,16 +51,19 @@ function App() {
 
   // Load schemes on component mount
   useEffect(() => {
-    try {
-      const schemeData = getAllSchemes();
-      setSchemes(schemeData);
-      setLoading(false);
-    } catch (err) {
-      console.error("Error loading schemes:", err);
-      setError("Failed to load schemes. Please try again later.");
-      setLoading(false);
+    // Only load mock schemes if there's no active session
+    if (!sessionId) {
+      try {
+        // Don't load any schemes initially - wait for agent results
+        setSchemes([]);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error loading schemes:", err);
+        setError("Failed to load schemes. Please try again later.");
+        setLoading(false);
+      }
     }
-  }, []);
+  }, [sessionId]);
 
   // Poll results function with useCallback to avoid dependency issues
   const pollResults = useCallback(async () => {
@@ -70,30 +73,35 @@ function App() {
       const response = await axios.get(`${API_URL}/session/${sessionId}`);
       const data = response.data;
       
-      // Check if results have changed
-      const currentResults = data.results || {};
-      if (JSON.stringify(currentResults) !== JSON.stringify(sessionResults)) {
-        setSessionResults(currentResults);
+      // Update results
+      setSessionResults(data.results || {});
+      
+      // Update final answer
+      if (data.final_answer) {
+        setFinalAnswer(data.final_answer);
       }
       
-      // Update other state
-      setSessionStatus(data.status);
-      setFinalAnswer(data.final_answer);
+      // Update schemes - completely replace any existing schemes
+      if (data.schemes && Array.isArray(data.schemes)) {
+        console.log("Received schemes:", data.schemes);
+        setSchemes(data.schemes);
+      }
       
-      // Stop polling if the agent has completed or encountered an error
-      if (data.status === 'completed' || data.status === 'error') {
+      // Check if processing is complete
+      if (data.status === "completed" || data.status === "error") {
         setPollingActive(false);
-        setIsProcessing(false);
+        setSessionStatus(data.status);
+        return true;
       }
       
-      return true;
+      return false;
     } catch (error) {
       console.error("Error polling results:", error);
+      setError("Failed to get results. Please try again.");
       setPollingActive(false);
-      setIsProcessing(false);
-      return false;
+      return true;
     }
-  }, [sessionId, pollingActive, sessionResults]);
+  }, [sessionId, pollingActive]);
 
   // Set up polling effect
   useEffect(() => {
@@ -128,6 +136,10 @@ function App() {
       setSessionStatus('running');
       setSessionResults({});
       setFinalAnswer(null);
+      
+      // Clear existing schemes when starting a new query
+      // We'll get new schemes from the agent API
+      setSchemes([]);
     } catch (error) {
       console.error("Error processing query:", error);
       
@@ -152,6 +164,9 @@ function App() {
     setFinalAnswer(null);
     setPollingActive(false);
     setIsProcessing(false);
+    
+    // Clear schemes instead of loading mock data
+    setSchemes([]);
   };
 
   // For development/testing - uncomment to show mock data immediately

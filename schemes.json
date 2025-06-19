@@ -10,15 +10,15 @@
         "no_of_floors": "3"
       },
       "evaluations": {
-        "steel_tonnage": 27.02,
-        "column_size": 239.0,
-        "structural_depth": 604.0,
-        "concrete_tonnage": 500.0,
+        "steel_tonnage": 40.746,
+        "column_size": 358.0,
+        "structural_depth": 1103.0,
+        "concrete_tonnage": 666.67,
         "total_emissions": "unknown"
       },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
       "position_x": 0.0,
       "position_y": 0.0,
       "position_z": 0.0,
@@ -33,10 +33,16 @@
         "extents_y": "24",
         "no_of_floors": "3"
       },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
+      "evaluations": {
+        "steel_tonnage": 29.833,
+        "column_size": 310.0,
+        "structural_depth": 645.0,
+        "concrete_tonnage": 541.67,
+        "total_emissions": "unknown"
+      },
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
       "position_x": 0.0,
       "position_y": 0.0,
       "position_z": 0.0,
@@ -52,15 +58,15 @@
         "no_of_floors": "3"
       },
       "evaluations": {
-        "steel_tonnage": 27.176,
-        "column_size": 241.0,
-        "structural_depth": 614.0,
-        "concrete_tonnage": 500.0,
+        "steel_tonnage": 37.613,
+        "column_size": 371.0,
+        "structural_depth": 873.0,
+        "concrete_tonnage": 625.0,
         "total_emissions": "unknown"
       },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
       "position_x": 0.0,
       "position_y": 0.0,
       "position_z": 0.0,
@@ -75,13 +81,19 @@
         "extents_y": "24",
         "no_of_floors": "3"
       },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
+      "evaluations": {
+        "steel_tonnage": 30.742,
+        "column_size": 369.0,
+        "structural_depth": 618.0,
+        "concrete_tonnage": 500.0,
+        "total_emissions": "unknown"
+      },
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
       "color": "#ff40ff"
     },
     {
@@ -94,18 +106,18 @@
         "no_of_floors": "3"
       },
       "evaluations": {
-        "steel_tonnage": 26.878,
-        "column_size": 240.0,
-        "structural_depth": 609.0,
-        "concrete_tonnage": 500.0,
+        "steel_tonnage": 41.299,
+        "column_size": 369.0,
+        "structural_depth": 888.0,
+        "concrete_tonnage": 666.67,
         "total_emissions": "unknown"
       },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
       "color": "#40ffff"
     },
     {
@@ -117,13 +129,19 @@
         "extents_y": "24",
         "no_of_floors": "3"
       },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
+      "evaluations": {
+        "steel_tonnage": 26.569,
+        "column_size": 302.0,
+        "structural_depth": 480.0,
+        "concrete_tonnage": 416.67,
+        "total_emissions": "unknown"
+      },
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
       "color": "#ff8040"
     },
     {
@@ -136,18 +154,18 @@
         "no_of_floors": "3"
       },
       "evaluations": {
-        "steel_tonnage": 27.645,
-        "column_size": 227.0,
-        "structural_depth": 574.0,
-        "concrete_tonnage": 500.0,
+        "steel_tonnage": 38.219,
+        "column_size": 361.0,
+        "structural_depth": 889.0,
+        "concrete_tonnage": 625.0,
         "total_emissions": "unknown"
       },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
       "color": "#40ff80"
     },
     {
@@ -160,187 +178,19 @@
         "no_of_floors": "3"
       },
       "evaluations": {
-        "steel_tonnage": 30.91,
-        "column_size": 287.0,
-        "structural_depth": 645.0,
+        "steel_tonnage": 32.497,
+        "column_size": 348.0,
+        "structural_depth": 649.0,
         "concrete_tonnage": 541.67,
         "total_emissions": "unknown"
       },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
+      "width": 30.0,
+      "height": 9.0,
+      "depth": 24.0,
+      "position_x": 0,
+      "position_y": 0,
+      "position_z": 0,
       "color": "#8040ff"
-    },
-    {
-      "id": 9,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": {
-        "steel_tonnage": 42.237,
-        "column_size": 369.0,
-        "structural_depth": 1112.0,
-        "concrete_tonnage": 666.67,
-        "total_emissions": "unknown"
-      },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
-      "color": "#ff4080"
-    },
-    {
-      "id": 10,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
-      "color": "#ff4040"
-    },
-    {
-      "id": 11,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": {
-        "steel_tonnage": 26.978,
-        "column_size": 240.0,
-        "structural_depth": 603.0,
-        "concrete_tonnage": 500.0,
-        "total_emissions": "unknown"
-      },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
-      "color": "#40ff40"
-    },
-    {
-      "id": 12,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
-      "color": "#4040ff"
-    },
-    {
-      "id": 13,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": {
-        "steel_tonnage": 26.968,
-        "column_size": 241.0,
-        "structural_depth": 609.0,
-        "concrete_tonnage": 500.0,
-        "total_emissions": "unknown"
-      },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
-      "color": "#ffff40"
-    },
-    {
-      "id": 14,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0.0,
-      "position_y": 0.0,
-      "position_z": 0.0,
-      "color": "#ff40ff"
-    },
-    {
-      "id": 15,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": {
-        "steel_tonnage": 40.48,
-        "column_size": 356.0,
-        "structural_depth": 1078.0,
-        "concrete_tonnage": 666.67,
-        "total_emissions": "unknown"
-      },
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0,
-      "position_y": 0,
-      "position_z": 0,
-      "color": "#40ffff"
-    },
-    {
-      "id": 16,
-      "parameters": {
-        "grid_spacing_x": "6",
-        "grid_spacing_y": "7",
-        "extents_x": "30",
-        "extents_y": "24",
-        "no_of_floors": "3"
-      },
-      "evaluations": null,
-      "width": 3.0,
-      "height": 0.9,
-      "depth": 2.4,
-      "position_x": 0,
-      "position_y": 0,
-      "position_z": 0,
-      "color": "#ff8040"
     }
   ]
 }
