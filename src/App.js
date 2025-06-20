@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
-import FallbackSchemeGrid from './components/FallbackSchemeGrid';
+import SchemeGrid from './components/SchemeGrid';
 import AgentSession from './components/AgentSession';
-import { getAllSchemes } from './services/mockSchemeData';
 
 // API URL for the backend
 const API_URL = "http://localhost:8001"; // FastAPI backend URL
@@ -198,8 +197,8 @@ function App() {
           
           {/* Add scrollable container */}
           <div className="visualization-content">
-            {/* Use the FallbackSchemeGrid component */}
-            <FallbackSchemeGrid schemes={schemes} />
+            {/* Use the SchemeGrid component */}
+            <SchemeGrid schemes={schemes} />
           </div>
         </div>
         

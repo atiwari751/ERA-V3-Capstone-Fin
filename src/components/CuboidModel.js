@@ -1,37 +1,41 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 const CuboidModel = ({ width = 1, height = 1, depth = 1, position = [0, 0, 0], color = "#4287f5" }) => {
-  // Reference to the mesh
+  // Debug log for CuboidModel props
+  console.log("CuboidModel props:", { width, height, depth, position, color });
+  
   const meshRef = useRef();
+  const [hovered, setHovered] = useState(false);
+  const [clicked, setClicked] = useState(false);
   
-  // Ensure all values are valid numbers
-  const safeWidth = typeof width === 'number' && !isNaN(width) ? width : 1;
-  const safeHeight = typeof height === 'number' && !isNaN(height) ? height : 1;
-  const safeDepth = typeof depth === 'number' && !isNaN(depth) ? depth : 1;
-  
-  // Ensure position is a valid array
-  const safePosition = Array.isArray(position) && position.length >= 3 ? position : [0, 0, 0];
-  
-  // Animation - gentle rotation
-  useFrame((state, delta) => {
+  // Simple animation - gentle floating effect
+  useFrame((state) => {
     if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.2; // Rotate slowly around Y axis
+      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      
+      if (clicked) {
+        // Rotate when clicked
+        meshRef.current.rotation.y += 0.02;
+      }
     }
   });
-
+  
   return (
-    <mesh 
-      ref={meshRef} 
-      position={safePosition}
+    <mesh
+      ref={meshRef}
+      position={position}
+      scale={clicked ? 1.1 : 1}
+      onClick={() => setClicked(!clicked)}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
       castShadow
-      receiveShadow
     >
-      <boxGeometry args={[safeWidth, safeHeight, safeDepth]} />
+      <boxGeometry args={[width, height, depth]} />
       <meshStandardMaterial 
-        color={color} 
-        roughness={0.5}
-        metalness={0.2}
+        color={hovered ? '#ffffff' : color} 
+        metalness={0.5}
+        roughness={0.2}
       />
     </mesh>
   );
