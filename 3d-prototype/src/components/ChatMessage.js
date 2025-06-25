@@ -54,7 +54,7 @@ const ChatMessage = ({ message, isUser }) => {
             {/* Display final answer if present */}
             {message.finalAnswer && (
               <div className="final-answer">
-                <h4>Final Answer</h4>
+                <h4>Agent Response</h4>
                 <div className="answer-content">{message.finalAnswer}</div>
               </div>
             )}

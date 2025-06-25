@@ -87,7 +87,7 @@ const ChatInterface = ({ onSendMessage, isProcessing }) => {
   return (
     <div className="chat-interface">
       <div className="chat-header">
-        <h2>AGENT CHAT</h2>
+        <h2>SCHEMING AGENT</h2>
         <button className="new-session-button" onClick={handleNewSession}>
           New Session
         </button>
