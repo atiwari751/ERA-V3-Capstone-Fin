@@ -19,6 +19,13 @@ const simulateToolExecution = async (toolName, delay, result) => {
   });
 };
 
+// Track conversation context
+let conversationContext = {
+  lastTopic: null,
+  mentionedBuildings: [],
+  currentDesign: null
+};
+
 // Predefined responses for different queries
 const queryResponses = {
   'default': {
@@ -79,24 +86,124 @@ const queryResponses = {
       }
     ],
     finalAnswer: 'I\'ve designed a 50,000 sq ft office building with 5 floors. The design features flexible open office areas, 8 conference rooms, and support spaces including a ground floor café. The building meets all commercial building codes including ADA requirements and fire safety regulations. The estimated construction cost is $16 million ($320 per square foot).'
+  },
+  // Follow-up responses
+  'how many bedrooms': {
+    tools: [
+      {
+        tool: 'check_current_design',
+        result: 'Checking current house design:\n- Design type: Single family home\n- Bedrooms: 3\n- Master bedroom: 220 sq ft\n- Bedroom 2: 140 sq ft\n- Bedroom 3: 130 sq ft'
+      }
+    ],
+    finalAnswer: 'The current house design has 3 bedrooms. The master bedroom is 220 sq ft, and the other two bedrooms are 140 sq ft and 130 sq ft respectively. All bedrooms meet the minimum size requirements of 70 sq ft.'
+  },
+  'add another bedroom': {
+    tools: [
+      {
+        tool: 'modify_house_design',
+        result: 'Modifying house design:\n- Converting den/office space to bedroom\n- New bedroom size: 120 sq ft\n- Adding closet and window for egress\n- Adjusting HVAC for additional room'
+      },
+      {
+        tool: 'recalculate_specifications',
+        result: 'Updated specifications:\n- Total bedrooms: 4\n- Total area: 1,900 sq ft (increased by 100 sq ft)\n- Estimated construction cost increase: $15,000'
+      }
+    ],
+    finalAnswer: 'I\'ve modified the house design to include a 4th bedroom. I converted the den/office space into a 120 sq ft bedroom with a closet and window for egress. This increases the total house size to 1,900 sq ft and would add approximately $15,000 to the construction cost.'
+  },
+  'what is the cost': {
+    tools: [
+      {
+        tool: 'calculate_cost',
+        result: 'Calculating construction costs for current design:\n- Base construction: $300 per sq ft\n- Total area: 1,800 sq ft\n- Base cost: $540,000\n- Premium finishes: +$50,000\n- Site work: +$30,000\n- Total estimated cost: $620,000'
+      }
+    ],
+    finalAnswer: 'The estimated construction cost for this 1,800 sq ft house is $620,000. This includes $540,000 for base construction ($300 per sq ft), $50,000 for premium finishes, and $30,000 for site work. This estimate doesn\'t include land costs, permits, or design fees.'
+  },
+  'make it bigger': {
+    tools: [
+      {
+        tool: 'resize_design',
+        result: 'Resizing current design:\n- Increasing all room dimensions by 15%\n- Original size: 1,800 sq ft\n- New size: 2,070 sq ft\n- Adjusting structural elements and HVAC accordingly'
+      },
+      {
+        tool: 'recalculate_costs',
+        result: 'Updated cost calculation:\n- New area: 2,070 sq ft\n- Base construction: $300 per sq ft = $621,000\n- Premium finishes: +$57,500\n- Site work: +$30,000 (unchanged)\n- Total new estimate: $708,500 (+$88,500)'
+      }
+    ],
+    finalAnswer: 'I\'ve increased the house size by 15%, bringing it to 2,070 sq ft. All rooms have been proportionally enlarged while maintaining the same layout. The new estimated cost is $708,500, which is $88,500 more than the original design.'
+  },
+  'add a swimming pool': {
+    tools: [
+      {
+        tool: 'design_pool',
+        result: 'Designing swimming pool:\n- Pool size: 16\' x 32\' (512 sq ft)\n- Depth: 3\' to 6\' (sloped)\n- Features: LED lighting, tiled border, concrete deck\n- Equipment: Filtration system, heater, automatic cover'
+      },
+      {
+        tool: 'calculate_pool_costs',
+        result: 'Pool construction estimate:\n- Excavation and shell: $45,000\n- Filtration and equipment: $12,000\n- Decking (600 sq ft): $18,000\n- Features and finishing: $15,000\n- Total pool cost: $90,000'
+      }
+    ],
+    finalAnswer: 'I\'ve added a 16\' x 32\' swimming pool to the design. The pool ranges from 3\' to 6\' in depth and includes LED lighting, a tiled border, and a concrete deck. The estimated cost for the pool is $90,000, which includes excavation, equipment, decking, and finishing.'
+  },
+  'how many floors': {
+    tools: [
+      {
+        tool: 'check_building_structure',
+        result: 'Analyzing current building design:\n- Building type: Office building\n- Number of floors: 5\n- Floor heights: 14 feet (ground floor), 12 feet (upper floors)\n- Total height: 62 feet'
+      }
+    ],
+    finalAnswer: 'The current office building design has 5 floors. The ground floor has a height of 14 feet to accommodate the reception and café areas, while the upper floors are each 12 feet high. The total building height is 62 feet.'
   }
+};
+
+// Helper function to find the best response based on query and context
+const findBestResponse = (query) => {
+  const lowerQuery = query.toLowerCase();
+  
+  // Check for exact matches first
+  for (const [key, response] of Object.entries(queryResponses)) {
+    if (lowerQuery.includes(key)) {
+      // Update conversation context
+      if (key === 'show me a house') {
+        conversationContext.lastTopic = 'house';
+        conversationContext.currentDesign = 'house';
+        conversationContext.mentionedBuildings.push('house');
+      } else if (key === 'design an office building') {
+        conversationContext.lastTopic = 'office';
+        conversationContext.currentDesign = 'office';
+        conversationContext.mentionedBuildings.push('office');
+      }
+      return response;
+    }
+  }
+  
+  // Check for follow-up questions based on context
+  if (conversationContext.lastTopic === 'house') {
+    if (lowerQuery.includes('bedroom') || lowerQuery.includes('room')) {
+      if (lowerQuery.includes('add') || lowerQuery.includes('more')) {
+        return queryResponses['add another bedroom'];
+      } else {
+        return queryResponses['how many bedrooms'];
+      }
+    } else if (lowerQuery.includes('cost') || lowerQuery.includes('price') || lowerQuery.includes('expensive')) {
+      return queryResponses['what is the cost'];
+    } else if (lowerQuery.includes('bigger') || lowerQuery.includes('larger') || lowerQuery.includes('size')) {
+      return queryResponses['make it bigger'];
+    } else if (lowerQuery.includes('pool') || lowerQuery.includes('swimming')) {
+      return queryResponses['add a swimming pool'];
+    }
+  } else if (conversationContext.lastTopic === 'office') {
+    if (lowerQuery.includes('floor') || lowerQuery.includes('level') || lowerQuery.includes('story')) {
+      return queryResponses['how many floors'];
+    }
+  }
+  
+  // Default response if no match found
+  return queryResponses.default;
 };
 
 // Mock agent service
 const mockAgentService = {
-  // Start a new session with a query
-  startSession: async (query) => {
-    const sessionId = generateSessionId();
-    
-    // Return initial session state
-    return {
-      sessionId,
-      status: 'initializing',
-      results: {},
-      finalAnswer: null
-    };
-  },
-  
   // Process a query and return results over time
   processQuery: async (query, onUpdate) => {
     const sessionId = generateSessionId();
@@ -109,16 +216,8 @@ const mockAgentService = {
       finalAnswer: null
     });
     
-    // Determine which response set to use
-    let responseSet = queryResponses.default;
-    
-    // Check for specific queries
-    const lowerQuery = query.toLowerCase();
-    if (lowerQuery.includes('house')) {
-      responseSet = queryResponses['show me a house'];
-    } else if (lowerQuery.includes('office')) {
-      responseSet = queryResponses['design an office building'];
-    }
+    // Find the best response based on query and context
+    const responseSet = findBestResponse(query);
     
     // Process each tool with delays
     const results = {};
@@ -142,7 +241,7 @@ const mockAgentService = {
       });
       
       // Wait for tool to complete (simulate processing time)
-      const delay = 2000 + Math.random() * 2000; // 2-4 seconds
+      const delay = 1000 + Math.random() * 2000; // 1-3 seconds
       const completedTool = await simulateToolExecution(
         tool.tool, 
         delay, 
@@ -161,7 +260,7 @@ const mockAgentService = {
     }
     
     // Add a delay before final answer
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Return final result
     onUpdate({

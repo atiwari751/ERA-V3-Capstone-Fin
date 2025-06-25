@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 import SchemeGrid from './components/SchemeGrid';
-import AgentSession from './components/AgentSession';
+import ChatInterface from './components/ChatInterface';
 import mockAgentService from './services/mockAgentService';
-import './components/AgentSession.css';
+import './components/ChatInterface.css';
 import './components/SchemeGrid.css';
 
 // API URL for the backend
@@ -14,13 +14,6 @@ function App() {
   const [cuboids, setCuboids] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userPrompt, setUserPrompt] = useState('');
-  
-  // Agent session state
-  const [sessionId, setSessionId] = useState(null);
-  const [sessionStatus, setSessionStatus] = useState('idle');
-  const [sessionResults, setSessionResults] = useState({});
-  const [finalAnswer, setFinalAnswer] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Fetch cuboid data from the backend
@@ -40,38 +33,20 @@ function App() {
     fetchCuboids();
   }, []);
 
-  // Handle user prompt submission
-  const handlePromptSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!userPrompt.trim() || isProcessing) return;
+  // Handle message from chat interface
+  const handleSendMessage = async (message, onUpdate) => {
+    if (!message.trim() || isProcessing) return;
     
     setIsProcessing(true);
     
     try {
       // Process the query with the mock agent service
-      await mockAgentService.processQuery(userPrompt, (update) => {
-        setSessionId(update.sessionId);
-        setSessionStatus(update.status);
-        setSessionResults(update.results);
-        setFinalAnswer(update.finalAnswer);
-      });
+      await mockAgentService.processQuery(message, onUpdate);
     } catch (error) {
       console.error("Error processing query:", error);
     } finally {
       setIsProcessing(false);
     }
-    
-    // Clear the input field
-    setUserPrompt('');
-  };
-  
-  // Handle starting a new query
-  const handleNewQuery = () => {
-    setSessionId(null);
-    setSessionStatus('idle');
-    setSessionResults({});
-    setFinalAnswer(null);
   };
 
   if (loading) {
@@ -102,42 +77,10 @@ function App() {
         
         {/* Agent Area (Right Side) */}
         <div className="agent-area">
-          <div className="agent-header">
-            <h2>AGENT</h2>
-          </div>
-          
-          <div className="agent-content">
-            {sessionId ? (
-              <AgentSession
-                sessionId={sessionId}
-                status={sessionStatus}
-                results={sessionResults}
-                finalAnswer={finalAnswer}
-                onNewQuery={handleNewQuery}
-              />
-            ) : (
-              <div className="agent-placeholder">
-                <p>Enter a prompt below to start a new session.</p>
-                <p>Try queries like "show me a house" or "design an office building".</p>
-              </div>
-            )}
-          </div>
-          
-          {/* User Input Area */}
-          <div className="user-input-area">
-            <form onSubmit={handlePromptSubmit}>
-              <input
-                type="text"
-                value={userPrompt}
-                onChange={(e) => setUserPrompt(e.target.value)}
-                placeholder="Enter your prompt here..."
-                disabled={isProcessing}
-              />
-              <button type="submit" disabled={isProcessing || !userPrompt.trim()}>
-                {isProcessing ? "Processing..." : "Send"}
-              </button>
-            </form>
-          </div>
+          <ChatInterface 
+            onSendMessage={handleSendMessage}
+            isProcessing={isProcessing}
+          />
         </div>
       </div>
     </div>

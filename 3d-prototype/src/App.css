@@ -1,34 +1,99 @@
+/* App container */
 .app-container {
+  height: 100vh;
   width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #f5f5f5;
 }
 
-/* Split Layout */
+/* Split layout for visualization and agent areas */
 .split-layout {
   display: flex;
-  width: 100%;
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
-/* Visualization Area (Left Side) */
+/* Visualization area (left side) */
 .visualization-area {
-  flex: 3; /* Takes 60% of the width */
+  flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden; /* Hide overflow on the container */
-  border-right: 1px solid #ccc;
+  padding: 20px;
+  background-color: #ffffff;
+  border-right: 1px solid #e0e0e0;
+  overflow: hidden;
 }
 
-/* Agent Area (Right Side) */
+.vis-header {
+  margin-bottom: 16px;
+}
+
+.vis-header h3 {
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.vis-header p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.visualization-content {
+  flex: 1;
+  overflow-y: auto;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Agent area (right side) */
 .agent-area {
-  flex: 2; /* Takes 40% of the width */
+  width: 40%;
+  min-width: 400px;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background-color: #f8f9fa;
+  background-color: #f0f2f5;
+  overflow: hidden;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  font-size: 18px;
+  color: #666;
+  background-color: #f5f5f5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .split-layout {
+    flex-direction: column;
+  }
+  
+  .visualization-area {
+    height: 50%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .agent-area {
+    width: 100%;
+    max-width: none;
+    height: 50%;
+  }
+}
+
+@media (max-width: 600px) {
+  .visualization-area {
+    padding: 10px;
+  }
 }
 
 .agent-header {
@@ -87,16 +152,6 @@
   background-color: #45a049;
 }
 
-/* Loading State */
-.loading {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 24px;
-  color: #333;
-}
-
 /* Controls for 3D visualization */
 .controls {
   position: absolute;
@@ -133,31 +188,4 @@
 
 .agent-placeholder p {
   margin: 8px 0;
-}
-
-.vis-header {
-  background-color: #333;
-  color: white;
-  padding: 10px 15px;
-  text-align: center;
-  border-bottom: 1px solid #444;
-  flex-shrink: 0; /* Prevent header from shrinking */
-}
-
-.vis-header h3 {
-  margin: 0 0 5px 0;
-  font-size: 18px;
-}
-
-.vis-header p {
-  margin: 0;
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-/* Create a scrollable container for the grid */
-.visualization-content {
-  flex: 1;
-  overflow: auto; /* Add scrollbars when content overflows */
-  position: relative;
 } 

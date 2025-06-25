@@ -1,0 +1,126 @@
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  margin: 8px 0;
+  max-width: 85%;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-message {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.agent-message {
+  align-self: flex-start;
+  margin-right: auto;
+}
+
+.message-content {
+  padding: 10px 14px;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-message .message-content {
+  background-color: #dcf8c6;
+  border-top-right-radius: 4px;
+}
+
+.agent-message .message-content {
+  background-color: #ffffff;
+  border-top-left-radius: 4px;
+}
+
+.user-text, .agent-text {
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #8c8c8c;
+  margin-top: 2px;
+  align-self: flex-end;
+}
+
+.user-message .message-time {
+  padding-right: 8px;
+}
+
+.agent-message .message-time {
+  padding-left: 8px;
+}
+
+/* Tool results styling */
+.results-section {
+  margin-top: 10px;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tool-result {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 8px;
+  background-color: #f9f9f9;
+}
+
+.tool-summary {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tool-content {
+  padding: 8px 12px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.info-message {
+  font-style: italic;
+  color: #666;
+  font-size: 13px;
+}
+
+.result-code {
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  margin: 0;
+  color: #333;
+}
+
+.final-answer {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-left: 3px solid #4caf50;
+  background-color: #f1f8e9;
+  border-radius: 4px;
+}
+
+.final-answer h4 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  color: #2e7d32;
+}
+
+.answer-content {
+  font-size: 14px;
+  line-height: 1.5;
+} 
